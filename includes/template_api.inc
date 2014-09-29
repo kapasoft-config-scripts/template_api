@@ -2,548 +2,105 @@
 
 function _breadcrumb_tapi($node = null)
 {
-    $breadcrumb = array();
-    $url = '#';
-    $label = '';
-    if (isset($node) && is_array($node)) {
-        $url = (isset($node->nid)) ? drupal_get_path_alias('node/' . $node->nid) : $node['nid'];
-        $label = (isset($node->title)) ? $node->title : $node['title'];
-    } elseif (isset($node)) {
-        $label = $node;
-    } else {
-        $url = '/';
-        $label = t('Home');
+    $breadcrumb_tapi = ds_menu_get_active_breadcrumb();
+    if (empty($breadcrumb_tapi)) {
+        $breadcrumb_tapi[0] = _breadcrumb_link(); //set home page
     }
-    return array(
-        'url' => $url,
-        'label' => $label,
-        'first' => false,
-        'last' => false,
-    );
+
+    // Optionally get rid of the homepage link.
+    $show_breadcrumb_home = theme_get_setting('bootstrap_breadcrumb_home');
+    if (!$show_breadcrumb_home) {
+        array_shift($breadcrumb_tapi);
+    }
+
+    $breadcrumb_tapi[0]['first'] = true;
+    $breadcrumb_tapi[0]['last'] = false;
+
+    //set last breadcrumb
+    if (theme_get_setting('bootstrap_breadcrumb_title') && !empty($breadcrumb_tapi)) {
+        $item = menu_get_item();
+        $breadcrumb_tapi[] = array(
+            // If we are on a non-default tab, use the tab's title.
+            'label' => !empty($item['tab_parent']) ? check_plain($item['title']) : drupal_get_title(),
+            'url' => (isset($item['href'])) ? '/' . $item['href'] : $item['path'],
+            'last' => true,
+            'first' => false,
+        );
+
+        //fix search string
+        if ($item['original_map'][0] == 'search') {
+            $breadcrumb_tapi[count($breadcrumb_tapi) - 1]['label'] = end($item['page_arguments']);
+        }
+    }
+
+    drupal_alter('breadcrumb_tapi', $breadcrumb_tapi);
+    return $breadcrumb_tapi;
+}
+
+function _breadcrumb_link(){
+    $breadcrumb_tapi = array();
+    $breadcrumb_tapi['url'] = '#';
+    $breadcrumb_tapi['label'] = '';
+    $breadcrumb_tapi['first'] = false;
+    $breadcrumb_tapi['last'] = false;
+    if (isset($node) && is_array($node)) {
+        $breadcrumb_tapi['url'] = (isset($node->nid)) ? drupal_get_path_alias('node/' . $node->nid) : $node['nid'];
+        $breadcrumb_tapi['label'] = (isset($node->title)) ? $node->title : $node['title'];
+    } elseif (isset($node)) {
+        $breadcrumb_tapi['label'] = $node;
+    } else {
+        $breadcrumb_tapi['url'] = '/';
+        $breadcrumb_tapi['label'] = t('Home');
+    }
+    return $breadcrumb_tapi;
 }
 
 /*******Theme Custom Settings******/
-function _theme_settings($theme_name)
+function _theme_settings_tapi()
 {
     $theme_tapi = array();
 
     //scheme-color
-    $theme_tapi['color'] = variable_get('ds_theme_color', theme_get_setting('ds_theme_color'));
+    $theme_tapi['color'] = array();
+    $theme_tapi['color']['index'] = 'ds_theme_color';
+    $theme_tapi['color']['value'] = variable_get('ds_theme_color', theme_get_setting('ds_theme_color'));
 
     //layout - boxed, wide, semi-wide
-    $theme_tapi['layout'] = variable_get('ds_theme_layout', theme_get_setting('ds_theme_layout'));
+    $theme_tapi['layout'] = array();
+    $theme_tapi['layout']['index'] = 'ds_theme_layout';
+    $theme_tapi['layout']['value'] = variable_get('ds_theme_layout', theme_get_setting('ds_theme_layout'));
 
     //background image - image full name
+    $theme_tapi['bg-img'] = array();
+    $theme_tapi['bg-img'] = 'ds_theme_gb_img';
     $theme_tapi['bg-img'] = variable_get('ds_theme_gb_img', theme_get_setting('ds_theme_gb_img'));
 
     //background color - image full name
-    $theme_tapi['bg-color'] = variable_get('ds_theme_bg_color', theme_get_setting('ds_theme_bg_color'));
+    $theme_tapi['bg-color'] = array();
+    $theme_tapi['bg-color']['index'] = 'ds_theme_bg_color';
+    $theme_tapi['bg-color']['value'] = variable_get('ds_theme_bg_color', theme_get_setting('ds_theme_bg_color'));
+
+    //header
+    $theme_tapi['header'] = array();
+    $theme_tapi['header']['index'] = 'ds_theme_header';
+    $theme_tapi['header']['value'] = variable_get('ds_theme_header', theme_get_setting('ds_theme_header'));
+
+    //sidebar
+    $theme_tapi['sidebar'] = array();
+    $theme_tapi['sidebar']['index'] = 'ds_theme_sidebar';
+    $theme_tapi['sidebar']['value'] = variable_get('ds_theme_sidebar', theme_get_setting('ds_theme_sidebar'));
+
+
+    $theme_tapi['sidebar_position'] = array();
+    $theme_tapi['sidebar_position']['index'] = 'ds_theme_sidebar_pos';
+    $theme_tapi['sidebar_position']['value'] = variable_get('ds_theme_sidebar_pos', theme_get_setting('ds_theme_sidebar_pos'));
+
+    //footer
+    $theme_tapi['footer'] = array();
+    $theme_tapi['footer']['index'] = 'ds_theme_footer';
+    $theme_tapi['footer']['value'] = variable_get('ds_theme_footer', theme_get_setting('ds_theme_footer'));
 
     return $theme_tapi;
-}
-
-/******Event********/
-function _event_teaser_tapi($event)
-{
-    $event_tapi = array();
-    if (isset($event)) {
-        $event_tapi['url'] = base_path() . drupal_get_path_alias('node/' . $event->nid); //url to a event
-        $event_tapi['title'] = $event->title;
-        $field_instance = field_get_items('node', $event, 'field_event_date');
-        $event_date = strtotime($field_instance[0]['value']);
-        $event_tapi['date'] = array();
-        $event_tapi['date']['full'] = (isset($event_date)) ? date("j M, Y", $event_date) : '';
-        $event_tapi['date']['day'] = (isset($event_date)) ? date("j", $event_date) : '';
-        $event_tapi['date']['month'] = (isset($event_date)) ? date("M", $event_date) : '';
-        $event_tapi['date']['year'] = (isset($event_date)) ? date("Y", $event_date) : '';
-        $event_tapi['date']['hour'] = (isset($event_date)) ? date("H", $event_date) : '';
-        $event_tapi['date']['min'] = (isset($event_date)) ? date("i", $event_date) : '';
-    } else {
-        $event_tapi['url'] = '';
-        $event_tapi['title'] = '';
-        $event_tapi['date'] = array();
-        $event_tapi['date']['full'] = '';
-        $event_tapi['date']['day'] = '';
-        $event_tapi['date']['month'] = '';
-        $event_tapi['date']['year'] = '';
-        $event_tapi['date']['hour'] = '';
-    }
-
-    return $event_tapi;
-}
-
-/*******Podcast******/
-function _podcast_teaser_tapi($podcast)
-{
-    module_load_include('module', 'designssquare_lib');
-    $podcast_tapi = array();
-
-    if (isset($podcast)) {
-        $podcast_tapi['url'] = base_path() . drupal_get_path_alias('node/' . $podcast->nid); //url to a project
-        $podcast_tapi['title'] = $podcast->title;
-        $field_instance = field_get_items('node', $podcast, 'field_ds_podcast_summary');
-        $field_value = ($field_instance) ? field_view_value('node', $podcast, 'field_ds_podcast_summary', $field_instance[0]) : '';
-        $podcast_tapi['summary'] = htmlspecialchars_decode(render($field_value));
-
-        $field_instance = field_get_items('node', $podcast, 'field_ds_podcast_featured_img');
-        $field_value = ($field_instance) ? array_shift($field_instance) : '';
-        $podcast_tapi['featured_img'] = array();
-        $podcast_tapi['featured_img']['url'] = (isset($field_value['uri'])) ? file_create_url($field_value['uri']) : '';
-        $podcast_tapi['featured_img']['alt'] = (isset($field_value['alt'])) ? $field_value['alt'] : '';
-
-        //images size for the teaser
-        $image_style = image_style_load('ds_podcast_teaser_img');
-        if (empty($image_style)) {
-            $podcast_tapi['featured_img']['width'] = '';
-            $podcast_tapi['featured_img']['height'] = '';
-        } else {
-            $thumb_effect = array_shift($image_style['effects']);
-            $podcast_tapi['featured_img']['width'] = $thumb_effect['data']['width'] . 'px';
-            $podcast_tapi['featured_img']['height'] = $thumb_effect['data']['height'] . 'px';
-        }
-
-        $field_instance = field_get_items('node', $podcast, 'field_ds_podcast_download');
-        $field_value = ($field_instance) ? array_shift($field_instance) : '';
-        $podcast_tapi['audio'] = array();
-        $podcast_tapi['audio']['url'] = (isset($field_value['uri'])) ? file_create_url($field_value['uri']) : '';
-        $podcast_tapi['audio']['alt'] = (isset($field_value['alt'])) ? $field_value['alt'] : '';
-        $podcast_tapi['audio']['label'] = t('Play Podcast');
-        $audio_render_array = field_view_field(
-            'node',
-            $podcast,
-            'field_ds_podcast_download',
-            array(
-                'type' => 'audiofield_embedded',
-                'label' => 'hidden',
-                'field types' => array('file'),
-                'description' => t('Displays an audio player and optional download link.'),
-            )
-        );
-        $podcast_tapi['audio']['full'] = render($audio_render_array);
-    } else {
-        $podcast_tapi['url'] = ''; //url to a project
-        $podcast_tapi['title'] = '';
-        $podcast_tapi['summary'] = '';
-        $podcast_tapi['audio'] = array();
-        $podcast_tapi['audio']['url'] = '';
-        $podcast_tapi['audio']['alt'] = '';
-        $podcast_tapi['audio']['label'] = '';
-        $podcast_tapi['audio']['full'] = '';
-        $podcast_tapi['featured_img'] = array();
-        $podcast_tapi['featured_img']['url'] = '';
-        $podcast_tapi['featured_img']['alt'] = '';
-    }
-
-    //provide contextual links
-    $podcast_tapi['ds_contextual_links'] = node_contextual_links($podcast);
-
-    return $podcast_tapi;
-}
-
-function _podcast_tapi($node)
-{
-    $podcast_tapi = _podcast_teaser_tapi($node);
-
-    if (isset($node) && !empty($node)) {
-        $field_instance = field_get_items('node', $node, 'body');
-        $content = ($field_instance) ? field_view_value('node', $node, 'body', $field_instance[0]) : '';
-        $podcast_tapi['content'] = render($content);
-        $field_instance = field_get_items('node', $node, 'field_ds_podcast_pub_date');
-        $publication_timestamp = ($field_instance) ? $field_instance[0]['value'] : null;
-        $podcast_tapi['date'] = array();
-        $podcast_tapi['date']['full'] = (isset($publication_timestamp)) ? date("j M, Y", $publication_timestamp) : '';
-        $podcast_tapi['date']['day'] = (isset($publication_timestamp)) ? date("j", $publication_timestamp) : '';
-        $podcast_tapi['date']['month'] = (isset($publication_timestamp)) ? date("M", $publication_timestamp) : '';
-        $podcast_tapi['date']['year'] = (isset($publication_timestamp)) ? date("Y", $publication_timestamp) : '';
-    } else {
-        $podcast_tapi['content'] = '';
-        $podcast_tapi['date'] = array();
-        $podcast_tapi['date']['full'] = '';
-        $podcast_tapi['date']['day'] = '';
-        $podcast_tapi['date']['month'] = '';
-        $podcast_tapi['date']['year'] = '';
-    }
-
-    //images size for the block
-    $podcast_tapi['block_img'] = array();
-    $image_style = image_style_load('ds_podcast_block_img');
-    if (empty($image_style)) {
-        $podcast_tapi['block_img']['width'] = '';
-        $podcast_tapi['block_img']['height'] = '';
-    } else {
-        $thumb_effect = array_shift($image_style['effects']);
-        $podcast_tapi['block_img']['width'] = $thumb_effect['data']['width'] . 'px';
-        $podcast_tapi['block_img']['height'] = $thumb_effect['data']['height'] . 'px';
-    }
-
-    return $podcast_tapi;
-}
-
-/*******Newsletter******/
-function _newsletter_teaser_tapi($newsletter)
-{
-    module_load_include('module', 'designssquare_lib');
-    $newsletter_tapi = array();
-
-    if (isset($newsletter)) {
-        $newsletter_tapi['url'] = base_path() . drupal_get_path_alias('node/' . $newsletter->nid); //url to a project
-        $newsletter_tapi['title'] = $newsletter->title;
-        $field_instance = field_get_items('node', $newsletter, 'field_ds_newsletter_summary');
-        $field_value = ($field_instance) ? field_view_value('node', $newsletter, 'field_ds_newsletter_summary', $field_instance[0]) : '';
-        $newsletter_tapi['summary'] = htmlspecialchars_decode(render($field_value));
-
-        $field_instance = field_get_items('node', $newsletter, 'field_ds_newsletter_download');
-        $field_value = ($field_instance) ? array_shift($field_instance) : '';
-        $newsletter_tapi['download'] = array();
-        $newsletter_tapi['download']['url'] = (isset($field_value['uri'])) ? file_create_url($field_value['uri']) : '';
-        $newsletter_tapi['download']['alt'] = (isset($field_value['alt'])) ? $field_value['alt'] : '';
-        $newsletter_tapi['download']['text'] = t('To Read More');
-    } else {
-        $newsletter_tapi['url'] = ''; //url to a project
-        $newsletter_tapi['title'] = '';
-        $newsletter_tapi['summary'] = '';
-        $newsletter_tapi['download'] = array();
-        $newsletter_tapi['download']['url'] = '';
-        $newsletter_tapi['download']['alt'] = '';
-    }
-
-    //provide contextual links
-    $newsletter_tapi['ds_contextual_links'] = node_contextual_links($newsletter);
-
-    drupal_alter('newsletter_teaser_tapi', $newsletter_tapi);
-    return $newsletter_tapi;
-}
-
-function _newsletter_tapi($node)
-{
-    $newsletter_tapi = _newsletter_teaser_tapi($node);
-
-    if (isset($node) && !empty($node)) {
-        $field_instance = field_get_items('node', $node, 'body');
-        $content = ($field_instance) ? field_view_value('node', $node, 'body', $field_instance[0]) : '';
-        $newsletter_tapi['content'] = render($content);
-        $field_instance = field_get_items('node', $node, 'field_ds_newsletter_pub_date');
-        $publication_timestamp = ($field_instance) ? $field_instance[0]['value'] : null;
-        $newsletter_tapi['date'] = array();
-        $newsletter_tapi['date']['full'] = (isset($publication_timestamp)) ? date("j M, Y", $publication_timestamp) : '';
-        $newsletter_tapi['date']['day'] = (isset($publication_timestamp)) ? date("j", $publication_timestamp) : '';
-        $newsletter_tapi['date']['month'] = (isset($publication_timestamp)) ? date("M", $publication_timestamp) : '';
-        $newsletter_tapi['date']['year'] = (isset($publication_timestamp)) ? date("Y", $publication_timestamp) : '';
-    } else {
-        $newsletter_tapi['content'] = '';
-        $newsletter_tapi['date'] = array();
-        $newsletter_tapi['date']['full'] = '';
-        $newsletter_tapi['date']['day'] = '';
-        $newsletter_tapi['date']['month'] = '';
-        $newsletter_tapi['date']['year'] = '';
-    }
-
-    return $newsletter_tapi;
-}
-
-
-/******GALLERY*******/
-function _gallery_teaser_tapi($gallery)
-{
-    module_load_include('module', 'designssquare_lib');
-    $gallery_tapi = array();
-
-    if (isset($gallery)) {
-        $gallery_tapi['url'] = base_path() . drupal_get_path_alias('node/' . $gallery->nid); //url to a project
-        $gallery_tapi['title'] = $gallery->title;
-
-        $field_instance = field_get_items('node', $gallery, 'field_ds_gallery_page_intro');
-        $field_value = ($field_instance) ? field_view_value('node', $gallery, 'field_ds_gallery_page_intro', $field_instance[0]) : '';
-        $gallery_tapi['intro'] = htmlspecialchars_decode(render($field_value));
-
-        $field_instance = field_get_items('node', $gallery, 'field_ds_gallery_summary');
-        $field_value = ($field_instance) ? field_view_value('node', $gallery, 'field_ds_gallery_summary', $field_instance[0]) : '';
-        $gallery_tapi['summary'] = htmlspecialchars_decode(render($field_value));
-        $field_instance = field_get_items('node', $gallery, 'field_ds_gallery_featured_img');
-        $field_value = ($field_instance) ? array_shift($field_instance) : '';
-        $gallery_tapi['featured_img'] = array();
-        $gallery_tapi['featured_img']['url'] = (isset($field_value['uri'])) ? file_create_url($field_value['uri']) : '';
-        $gallery_tapi['featured_img']['alt'] = (isset($field_value['alt'])) ? $field_value['alt'] : '';
-        //images size for the teaser
-        $image_style = image_style_load('ds_foto_gallery_teaser');
-        if (empty($image_style)) {
-            $gallery_tapi['featured_img']['width'] = '';
-            $gallery_tapi['featured_img']['height'] = '';
-        } else {
-            $thumb_effect = array_shift($image_style['effects']);
-            $gallery_tapi['featured_img']['width'] = $thumb_effect['data']['width'] . 'px';
-            $gallery_tapi['featured_img']['height'] = $thumb_effect['data']['height'] . 'px';
-        }
-
-        //images size for the block
-        $gallery_tapi['block_img'] = array();
-        $image_style = image_style_load('ds_foto_gallery_block');
-        if (empty($image_style)) {
-            $gallery_tapi['block_img']['width'] = '';
-            $gallery_tapi['block_img']['height'] = '';
-        } else {
-            $thumb_effect = array_shift($image_style['effects']);
-            $gallery_tapi['block_img']['width'] = $thumb_effect['data']['width'] . 'px';
-            $gallery_tapi['block_img']['height'] = $thumb_effect['data']['height'] . 'px';
-        }
-
-    } else {
-        $gallery_tapi['url'] = ''; //url to a project
-        $gallery_tapi['title'] = '';
-        $gallery_tapi['summary'] = '';
-        $gallery_tapi['featured_img'] = array();
-        $gallery_tapi['featured_img']['url'] = '';
-        $gallery_tapi['featured_img']['alt'] = '';
-    }
-
-    //provide contextual links
-    $gallery_tapi['ds_contextual_links'] = node_contextual_links($gallery);
-
-    return $gallery_tapi;
-}
-
-function _gallery_tapi($node)
-{
-    $gallery_tapi = _gallery_teaser_tapi($node);
-
-    //resize image at focus
-    $gallery_tapi['gallery_focus_img'] = array();
-    $image_style = image_style_load('ds_foto_gallery_single');
-    if (empty($image_style)) {
-        $gallery_tapi['gallery_focus_img']['width'] = '';
-        $gallery_tapi['gallery_focus_img']['height'] = '';
-    } else {
-        $thumb_effect = array_shift($image_style['effects']);
-        $gallery_tapi['gallery_focus_img']['width'] = $thumb_effect['data']['width'] . 'px';
-        $gallery_tapi['gallery_focus_img']['height'] = $thumb_effect['data']['height'] . 'px';
-    }
-
-    if (isset($node) && !empty($node)) {
-        $field_instance = field_get_items('node', $node, 'body');
-        $content = ($field_instance) ? field_view_value('node', $node, 'body', $field_instance[0]) : '';
-        $gallery_tapi['content'] = render($content);
-        $gallery_tapi['index'] = array();
-        $gallery_tapi['index']['next'] = array();
-        $id_next_node = next_node($node);
-        if (isset($id_next_node)) {
-            $gallery_tapi['index']['next']['is_present'] = TRUE;
-            $gallery_tapi['index']['next']['url'] = base_path() . drupal_get_path_alias('node/' . $id_next_node);
-            $gallery_tapi['index']['next']['text'] = t('Next');
-        } else {
-            $gallery_tapi['index']['next']['is_present'] = FALSE;
-        }
-
-        $id_previous_node = previous_node($node);
-        $gallery_tapi['index']['previous'] = array();
-        if (isset($id_previous_node)) {
-            $gallery_tapi['index']['previous']['is_present'] = TRUE;
-            $gallery_tapi['index']['previous']['text'] = t('Previous');
-            $gallery_tapi['index']['previous']['url'] = base_path() . drupal_get_path_alias('node/' . $id_previous_node);
-        } else {
-            $gallery_tapi['index']['previous']['is_present'] = FALSE;
-        }
-
-        $gallery_tapi['gallery_img'] = array();
-        $field_instance = field_get_items('node', $node, 'field_ds_gallery_images');
-        if (isset($field_instance) && is_array($field_instance)) {
-            foreach ($field_instance as $key => $gallery_img) {
-                $gallery_tapi['gallery_img'][$key]['url'] = (isset($gallery_img['uri'])) ? file_create_url($gallery_img['uri']) : '';
-                $gallery_tapi['gallery_img'][$key]['alt'] = (isset($gallery_img['alt'])) ? $gallery_img['alt'] : '';
-                $gallery_tapi['gallery_img'][$key]['title'] = (isset($gallery_img['title'])) ? $gallery_img['title'] : '';
-            }
-        }
-    } else {
-        $gallery_tapi['content'] = '';
-        $gallery_tapi['index'] = array();
-        $gallery_tapi['index']['next'] = array();
-        $gallery_tapi['index']['next']['url'] = '';
-        $gallery_tapi['index']['next']['text'] = '';
-        $gallery_tapi['index']['previous'] = array();
-        $gallery_tapi['index']['previous']['text'] = '';
-        $gallery_tapi['index']['previous']['url'] = '';
-        $gallery_tapi['gallery_img'] = array();
-    }
-
-    return $gallery_tapi;
-}
-
-/*****SERVICE*******/
-function _service_teaser_tapi($service)
-{
-    module_load_include('module', 'designssquare_lib');
-    $service_tapi = array();
-
-    if (isset($service)) {
-        $service_tapi['url'] = base_path() . drupal_get_path_alias('node/' . $service->nid); //url to a project
-        $service_tapi['title'] = $service->title;
-        $field_instance = field_get_items('node', $service, 'field_ds_service_summary');
-        $field_value = ($field_instance) ? field_view_value('node', $service, 'field_ds_service_summary', $field_instance[0]) : '';
-        $summary = htmlspecialchars_decode(render($field_value));
-        $service_tapi['summary'] = (isset($summary)) ? truncate_utf8($summary, 200, true, true) : '';
-
-        $field_instance = field_get_items('node', $service, 'field_ds_service_featured_img');
-        $field_value = ($field_instance) ? array_shift($field_instance) : '';
-        $service_tapi['featured_img'] = array();
-        $service_tapi['featured_img']['url'] = (isset($field_value['uri'])) ? file_create_url($field_value['uri']) : '';
-        $service_tapi['featured_img']['alt'] = (isset($field_value['alt'])) ? $field_value['alt'] : '';
-
-        //images size for the teaser
-        $image_style = image_style_load('ds_service_teaser_img');
-        if (empty($image_style)) {
-            $service_tapi['featured_img']['width'] = '';
-            $service_tapi['featured_img']['height'] = '';
-        } else {
-            $thumb_effect = array_shift($image_style['effects']);
-            $service_tapi['featured_img']['width'] = $thumb_effect['data']['width'] . 'px';
-            $service_tapi['featured_img']['height'] = $thumb_effect['data']['height'] . 'px';
-        }
-
-    } else {
-        $service_tapi['url'] = ''; //url to a project
-        $service_tapi['title'] = '';
-        $service_tapi['summary'] = '';
-        $service_tapi['featured_img'] = array();
-        $service_tapi['featured_img']['url'] = '';
-        $service_tapi['featured_img']['alt'] = '';
-    }
-
-    //provide contextual links
-    $service_tapi['ds_contextual_links'] = node_contextual_links($service);
-
-    return $service_tapi;
-}
-
-function _service_tapi($node)
-{
-    $service_tapi = _service_teaser_tapi($node);
-
-    if (isset($node) && !empty($node)) {
-        $field_instance = field_get_items('node', $node, 'body');
-        $content = ($field_instance) ? field_view_value('node', $node, 'body', $field_instance[0], 'full') : '';
-        $service_tapi['content'] = render($content);
-        $service_tapi['index'] = array();
-        $service_tapi['index']['next'] = array();
-        $id_next_node = next_node($node);
-        if (isset($id_next_node)) {
-            $service_tapi['index']['next']['is_present'] = TRUE;
-            $service_tapi['index']['next']['url'] = base_path() . drupal_get_path_alias('node/' . $id_next_node);
-            $service_tapi['index']['next']['text'] = t('Next');
-        } else {
-            $service_tapi['index']['next']['is_present'] = FALSE;
-        }
-
-        $id_previous_node = previous_node($node);
-        $service_tapi['index']['previous'] = array();
-        if (isset($id_previous_node)) {
-            $service_tapi['index']['previous']['is_present'] = TRUE;
-            $service_tapi['index']['previous']['text'] = t('Previous');
-            $service_tapi['index']['previous']['url'] = base_path() . drupal_get_path_alias('node/' . $id_previous_node);
-        } else {
-            $service_tapi['index']['previous']['is_present'] = FALSE;
-        }
-
-//        $service_tapi['project_img'] = array();
-//        $field_instance = field_get_items('node', $node, 'field_ds_service_images');
-//        foreach ($field_instance as $key => $service_img) {
-//            $service_tapi['project_img'][$key]['url'] = (isset($service_img['uri'])) ? file_create_url($service_img['uri']) : '';
-//            $service_tapi['project_img'][$key]['alt'] = (isset($service_img['alt'])) ? $service_img['alt'] : '';
-//        }
-    } else {
-        $service_tapi['content'] = '';
-        $service_tapi['index'] = array();
-        $service_tapi['index']['next'] = array();
-        $service_tapi['index']['next']['url'] = '';
-        $service_tapi['index']['next']['text'] = '';
-        $service_tapi['index']['previous'] = array();
-        $service_tapi['index']['previous']['text'] = '';
-        $service_tapi['index']['previous']['url'] = '';
-//        $service_tapi['project_img'] = array();
-    }
-
-    return $service_tapi;
-}
-
-
-/*****PORTFOLIO*******/
-function _project_teaser_tapi($project)
-{
-    module_load_include('module', 'designssquare_lib');
-    $project_tapi = array();
-
-    if (isset($project)) {
-        $project_tapi['url'] = base_path() . drupal_get_path_alias('node/' . $project->nid); //url to a project
-        $project_tapi['title'] = $project->title;
-        $field_instance = field_get_items('node', $project, 'field_ds_portfolio_summary');
-        $field_value = ($field_instance) ? field_view_value('node', $project, 'field_ds_portfolio_summary', $field_instance[0]) : '';
-        $project_tapi['summary'] = htmlspecialchars_decode(render($field_value));
-        $field_instance = field_get_items('node', $project, 'field_ds_portfolio_featured_img');
-        $field_value = ($field_instance) ? array_shift($field_instance) : '';
-        $project_tapi['featured_img'] = array();
-        $project_tapi['featured_img']['url'] = (isset($field_value['uri'])) ? file_create_url($field_value['uri']) : '';
-        $project_tapi['featured_img']['alt'] = (isset($field_value['alt'])) ? $field_value['alt'] : '';
-    } else {
-        $project_tapi['url'] = ''; //url to a project
-        $project_tapi['title'] = '';
-        $project_tapi['summary'] = '';
-        $project_tapi['featured_img'] = array();
-        $project_tapi['featured_img']['url'] = '';
-        $project_tapi['featured_img']['alt'] = '';
-    }
-
-    //provide contextual links
-    $project_tapi['ds_contextual_links'] = node_contextual_links($project);
-
-    return $project_tapi;
-}
-
-function _project_tapi($node)
-{
-    $project_tapi = _project_teaser_tapi($node);
-
-    if (isset($node) && !empty($node)) {
-        $field_instance = field_get_items('node', $node, 'body');
-        $content = ($field_instance) ? field_view_value('node', $node, 'body', $field_instance[0]) : '';
-        $project_tapi['content'] = render($content);
-        $project_tapi['index'] = array();
-        $project_tapi['index']['next'] = array();
-        $id_next_node = next_node($node);
-        if (isset($id_next_node)) {
-            $project_tapi['index']['next']['is_present'] = TRUE;
-            $project_tapi['index']['next']['url'] = base_path() . drupal_get_path_alias('node/' . $id_next_node);
-            $project_tapi['index']['next']['text'] = t('Next');
-        } else {
-            $project_tapi['index']['next']['is_present'] = FALSE;
-        }
-
-        $id_previous_node = previous_node($node);
-        $project_tapi['index']['previous'] = array();
-        if (isset($id_previous_node)) {
-            $project_tapi['index']['previous']['is_present'] = TRUE;
-            $project_tapi['index']['previous']['text'] = t('Previous');
-            $project_tapi['index']['previous']['url'] = base_path() . drupal_get_path_alias('node/' . $id_previous_node);
-        } else {
-            $project_tapi['index']['previous']['is_present'] = FALSE;
-        }
-
-        $project_tapi['project_img'] = array();
-        $field_instance = field_get_items('node', $node, 'field_ds_portfolio_images');
-        foreach ($field_instance as $key => $project_img) {
-            $project_tapi['project_img'][$key]['url'] = (isset($project_img['uri'])) ? file_create_url($project_img['uri']) : '';
-            $project_tapi['project_img'][$key]['alt'] = (isset($project_img['alt'])) ? $project_img['alt'] : '';
-        }
-    } else {
-        $project_tapi['content'] = '';
-        $project_tapi['index'] = array();
-        $project_tapi['index']['next'] = array();
-        $project_tapi['index']['next']['url'] = '';
-        $project_tapi['index']['next']['text'] = '';
-        $project_tapi['index']['previous'] = array();
-        $project_tapi['index']['previous']['text'] = '';
-        $project_tapi['index']['previous']['url'] = '';
-        $project_tapi['project_img'] = array();
-    }
-
-    return $project_tapi;
 }
 
 function _display_basic_tapi($display)
@@ -908,23 +465,18 @@ function _header_tapi()
     $head_tapi['user'] = _user_tapi();
 
     /*****Theme*****/
+
     $head_tapi['settings'] = array();
-    $head_tapi['settings']['url'] = base_path() . 'admin/appearance/settings/cascade';
+    $head_tapi['settings']['url'] = base_path() . 'admin/appearance/settings/'.$GLOBALS['theme'];
     $head_tapi['settings']['text'] = t(' Settings');
 
-//    return array(
-//        'slogan' => $slogan,
-//        'site_name' => $site_name,
-//        'home_url' => $path_to_home,
-//        'logo_path' => $logo_path,
-//    );
-
     /*********making backwards compatable**************/
-        $head_tapi['slogan'] = $site_slogan;
+    $head_tapi['slogan'] = $site_slogan;
     $head_tapi['site_name'] = $head_tapi['site']['name'];
     $head_tapi['home_url'] = $head_tapi['site']['front_url'];
     $head_tapi['logo_path'] = $head_tapi['logo']['path'];
 
+    drupal_alter('header_tapi', $head_tapi);
     return $head_tapi;
 }
 
@@ -1049,6 +601,7 @@ function _menu_link_tapi($link, $depth, $sub_menu)
     $link_tapi['has_sub_menu'] = (isset($sub_menu) && !empty($sub_menu)) ? true : false;
     $link_tapi['sub_menu'] = (isset($sub_menu) && !empty($sub_menu)) ? $sub_menu : '';
     $link_tapi['depth'] = $depth;
+    drupal_alter('menu_link_tapi', $link_tapi, $depth, $link['menu_name']);
     return $link_tapi;
 }
 

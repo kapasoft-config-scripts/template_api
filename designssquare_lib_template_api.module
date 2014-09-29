@@ -3,7 +3,7 @@ require dirname(__FILE__) . '/includes/template_api.inc';
 
 function designssquare_lib_template_api_preprocess_html(&$vars)
 {
-    if (!path_is_admin(current_path())) {
+//    if (!path_is_admin(current_path())) {
         //NO templating in ADMIN
         /****Header******/
         $header_tapi = _header_tapi();
@@ -44,7 +44,7 @@ function designssquare_lib_template_api_preprocess_html(&$vars)
 //            ));
 //        }
         $vars['footer'] = $footer;
-    }
+//    }
 
     $reqUrl = $_GET['q'];
 
@@ -66,7 +66,7 @@ function designssquare_lib_template_api_preprocess_page(&$vars)
     $vars['page_tapi'] = _page_tapi($vars);
 
     /**CONTACT TAPI***/
-    if(file_exists(path_to_theme('theme', variable_get('theme_default', NULL)).'/templates/contact.tpl.php')){
+    if (file_exists(path_to_theme('theme', variable_get('theme_default', NULL)) . '/templates/contact.tpl.php')) {
         //contact page
         $vars['contact_form'] = array(
             '#theme' => 'template_api_contact_form',
@@ -80,17 +80,17 @@ function designssquare_lib_template_api_preprocess_page(&$vars)
             '#theme' => 'template_api_contact_inquiry_form',
             '#contact_tapi' => _contact_tapi('inquiry'),
         );
-     }
+    }
 
     /*******User Login, Registration, Password*******/
     $reqUrl = $_GET['q'];
-    if(preg_match ('/user/', $reqUrl) && !$vars['logged_in']){
+    if (preg_match('/user/', $reqUrl) && !$vars['logged_in']) {
         $vars['user_tapi'] = _user_tapi();
         $vars['user_tapi']['is_authenticated'] = true;
         $vars['user_tapi']['password'] = _user_pass_tapi();
         $vars['user_tapi']['registration'] = _user_registration_tapi();
         $vars['user_tapi']['login'] = _user_login_tapi();
-    }else{
+    } else {
         //for user profile
         $vars['user_tapi'] = _user_tapi();
         $vars['user_tapi']['is_authenticated'] = true;
@@ -107,7 +107,7 @@ function designssquare_lib_template_api_theme()
                 'breadcrumbs_tapi' => NULL,
                 'vars_tapi' => NULL,
             ),
-            'path' => $path_to_theme . '/templates',
+            'path' => $path_to_theme . '/templates/template-api',
         ),
         'template_api_header' => array(
             'template' => 'header',
@@ -115,7 +115,7 @@ function designssquare_lib_template_api_theme()
                 'header_tapi' => NULL,
                 'vars_tapi' => NULL,
             ),
-            'path' => $path_to_theme . '/templates',
+            'path' => $path_to_theme . '/templates/template-api',
         ),
         'template_api_footer' => array(
             'template' => 'footer',
@@ -123,7 +123,7 @@ function designssquare_lib_template_api_theme()
                 'footer_tapi' => NULL,
                 'vars_tapi' => NULL,
             ),
-            'path' => $path_to_theme . '/templates',
+            'path' => $path_to_theme . '/templates/template-api',
         ),
         'template_api_search' => array(
             'template' => 'search',
@@ -131,70 +131,70 @@ function designssquare_lib_template_api_theme()
                 'search_tapi' => NULL,
 //               'vars_tapi' => NULL,
             ),
-            'path' => $path_to_theme . '/templates',
+            'path' => $path_to_theme . '/templates/template-api',
         ),
         'template_api_main_menu' => array(
             'template' => 'main-menu',
             'variables' => array(
                 'menu_tapi' => NULL,
             ),
-            'path' => $path_to_theme . '/templates',
+            'path' => $path_to_theme . '/templates/template-api',
         ),
         'template_api_main_menu_link' => array(
             'template' => 'main-menu-link',
             'variables' => array(
                 'link_tapi' => NULL,
             ),
-            'path' => $path_to_theme . '/templates',
+            'path' => $path_to_theme . '/templates/template-api',
         ),
         'template_api_bottom_menu' => array(
             'template' => 'bottom-menu',
             'variables' => array(
                 'menu_tapi' => NULL,
             ),
-            'path' => $path_to_theme . '/templates',
+            'path' => $path_to_theme . '/templates/template-api',
         ),
         'template_api_bottom_menu_link' => array(
             'template' => 'bottom-menu-link',
             'variables' => array(
                 'link_tapi' => NULL,
             ),
-            'path' => $path_to_theme . '/templates',
+            'path' => $path_to_theme . '/templates/template-api',
         ),
         'template_api_user_menu' => array(
             'template' => 'user-menu',
             'variables' => array(
                 'menu_tapi' => NULL,
             ),
-            'path' => $path_to_theme . '/templates',
+            'path' => $path_to_theme . '/templates/template-api',
         ),
         'template_api_user_menu_link' => array(
             'template' => 'user-menu-link',
             'variables' => array(
                 'link_tapi' => NULL,
             ),
-            'path' => $path_to_theme . '/templates',
+            'path' => $path_to_theme . '/templates/template-api',
         ),
         'template_api_contact_form' => array(
             'template' => 'contact',
             'variables' => array(
                 'contact_tapi' => NULL,
             ),
-            'path' => $path_to_theme . '/templates',
+            'path' => $path_to_theme . '/templates/template-api',
         ),
         'template_api_contact_block_form' => array(
             'template' => 'contact-block',
             'variables' => array(
                 'contact_tapi' => NULL,
             ),
-            'path' => $path_to_theme . '/templates',
+            'path' => $path_to_theme . '/templates/template-api',
         ),
         'template_api_contact_inquiry_form' => array(
             'template' => 'contact-inquiry',
             'variables' => array(
                 'contact_tapi' => NULL,
             ),
-            'path' => $path_to_theme . '/templates',
+            'path' => $path_to_theme . '/templates/template-api',
         ),
     );
 }
@@ -239,18 +239,18 @@ function designssquare_lib_template_api_breadcrumb(&$variables)
 {
 
     $output = '';
-    $breadcrumbs = $variables['breadcrumb'];
+    $breadcrumbs = _breadcrumb_tapi();
 
-    if (path_is_admin(current_path())) {
-        //for admin don't template
-        if (!empty($breadcrumbs)) {
-            // Provide a navigational heading to give context for breadcrumb links to
-            // screen-reader users. Make the heading invisible with .element-invisible.
-            $output = '<h2 class="element-invisible">' . t('You are here') . '</h2>';
-
-            $output .= '<div class="breadcrumb">' . implode(' » ', $breadcrumbs) . '</div>';
-        }
-    } else {
+//    if (path_is_admin(current_path())) {
+//        //for admin don't template
+//        if (!empty($breadcrumbs)) {
+//            // Provide a navigational heading to give context for breadcrumb links to
+//            // screen-reader users. Make the heading invisible with .element-invisible.
+//            $output = '<h2 class="element-invisible">' . t('You are here') . '</h2>';
+//
+//            $output .= '<div class="breadcrumb">' . implode(' » ', $breadcrumbs) . '</div>';
+//        }
+//    } else {
         //get the current content from cache
         $content = drupal_set_page_content();
         //indicate that you are not adding content but just reading it by setting static variable 'system...added' to False
@@ -264,76 +264,45 @@ function designssquare_lib_template_api_breadcrumb(&$variables)
         $content['page'] = $content['region'];
         // Determine if we are to display the breadcrumb.
         $bootstrap_breadcrumb = theme_get_setting('bootstrap_breadcrumb');
-        if (($bootstrap_breadcrumb == 1 || ($bootstrap_breadcrumb == 2 && arg(0) == 'admin')) && !empty($breadcrumbs)) {
+//        if (($bootstrap_breadcrumb == 1 || ($bootstrap_breadcrumb == 2 && arg(0) == 'admin')) && !empty($breadcrumbs)) {
             $output = theme('template_api_breadcrumbs', array(
                 'breadcrumbs_tapi' => $breadcrumbs,
                 'vars_tapi' => $content,
             ));
-        }
-    }
+//        }
+//    }
 
 
     return $output;
 }
 
 
-function designssquare_lib_template_api_preprocess_breadcrumb(&$vars)
-{
-    if (path_is_admin(current_path())) {
-        //for admin keep, don't template
-        $breadcrumb = & $variables['breadcrumb'];
-
-        // Optionally get rid of the homepage link.
-        $show_breadcrumb_home = theme_get_setting('bootstrap_breadcrumb_home');
-        if (!$show_breadcrumb_home && isset($breadcrumb) && array($breadcrumb) && !empty($breadcrumb)) {
-            array_shift($breadcrumb);
-        }
-
-        if (theme_get_setting('bootstrap_breadcrumb_title') && !empty($breadcrumb)) {
-            $item = menu_get_item();
-            $breadcrumb[] = array(
-                // If we are on a non-default tab, use the tab's title.
-                'data' => !empty($item['tab_parent']) ? check_plain($item['title']) : drupal_get_title(),
-                'class' => array('active'),
-            );
-        }
-
-    } else {
-        $breadcrumb = ds_menu_get_active_breadcrumb();
-        if (empty($breadcrumb)) {
-            $breadcrumb[0] = _breadcrumb_tapi(); //set home page
-        }
-
-        // Optionally get rid of the homepage link.
-        $show_breadcrumb_home = theme_get_setting('bootstrap_breadcrumb_home');
-        if (!$show_breadcrumb_home) {
-            array_shift($breadcrumb);
-        }
-
-        $breadcrumb[0]['first'] = true;
-        $breadcrumb[0]['last'] = false;
-
-        //set last breadcrumb
-        if (theme_get_setting('bootstrap_breadcrumb_title') && !empty($breadcrumb)) {
-            $item = menu_get_item();
-            $breadcrumb[] = array(
-                // If we are on a non-default tab, use the tab's title.
-                'label' => !empty($item['tab_parent']) ? check_plain($item['title']) : drupal_get_title(),
-                'url' => (isset($item['href'])) ? '/' . $item['href'] : $item['path'],
-                'last' => true,
-                'first' => false,
-            );
-
-            //fix search string
-            if ($item['original_map'][0] == 'search') {
-                $breadcrumb[count($breadcrumb) - 1]['label'] = end($item['page_arguments']);
-            }
-        }
-        //reset breadcrumbs
-        $vars['breadcrumb'] = $breadcrumb;
-
-    }
-}
+//function designssquare_lib_template_api_preprocess_breadcrumb(&$vars)
+//{
+////    if (path_is_admin(current_path())) {
+////        //for admin keep, don't template
+////        $breadcrumb = & $variables['breadcrumb'];
+////
+////        // Optionally get rid of the homepage link.
+////        $show_breadcrumb_home = theme_get_setting('bootstrap_breadcrumb_home');
+////        if (!$show_breadcrumb_home && isset($breadcrumb) && array($breadcrumb) && !empty($breadcrumb)) {
+////            array_shift($breadcrumb);
+////        }
+////
+////        if (theme_get_setting('bootstrap_breadcrumb_title') && !empty($breadcrumb)) {
+////            $item = menu_get_item();
+////            $breadcrumb[] = array(
+////                // If we are on a non-default tab, use the tab's title.
+////                'data' => !empty($item['tab_parent']) ? check_plain($item['title']) : drupal_get_title(),
+////                'class' => array('active'),
+////            );
+////        }
+////
+////    } else {
+//        //reset breadcrumbs
+//        $vars['breadcrumb'] = _breadcrumb_tapi();
+////    }
+//}
 
 /*override breadcrumb trail*/
 function ds_menu_get_active_breadcrumb()
@@ -377,16 +346,16 @@ function ds_menu_get_active_breadcrumb()
         }
 
         foreach ($active_trail as $parent) {
-            if (path_is_admin(current_path())) {
-                $breadcrumb[] = l($parent['title'], $parent['href'], $parent['localized_options']);
-            } else {
+//            if (path_is_admin(current_path())) {
+//                $breadcrumb[] = l($parent['title'], $parent['href'], $parent['localized_options']);
+//            } else {
                 $breadcrumb[] = array(
                     'label' => $parent['title'],
                     'url' => '/' . $parent['href'],
                     'last' => false,
                     'first' => false,
                 );
-            }
+//            }
         }
     }
     return $breadcrumb;
@@ -398,13 +367,13 @@ function designssquare_lib_template_api_menu_tree(&$variables)
     $menu_item_raw = array_shift($variables);
     $menu_item = array_shift($menu_item_raw);
     $menu_name = $menu_item['#original_link']['menu_name'];
-    $menu_template = drupal_get_path('theme', variable_get('theme_default', NULL)) . '/templates/'.$menu_name.'.tpl.php';
-    $menu_link_template = drupal_get_path('theme', variable_get('theme_default', NULL)) . '/templates/'.$menu_name.'-link.tpl.php';
+    $menu_template = drupal_get_path('theme', variable_get('theme_default', NULL)) . '/templates/template-api/' . $menu_name . '.tpl.php';
+    $menu_link_template = drupal_get_path('theme', variable_get('theme_default', NULL)) . '/templates/template-api/' . $menu_name . '-link.tpl.php';
 
-    if (path_is_admin(current_path()) || !file_exists($menu_template) || !file_exists($menu_link_template)) {
+    if ( !file_exists($menu_template) || !file_exists($menu_link_template)) {
         //in admin path use bootstrap_menu_tree
-        $output =  '<ul class="menu nav navbar-nav">' . $variables['tree'] . '</ul>';
-    }else{
+        $output = '<ul class="menu nav navbar-nav">' . $variables['tree'] . '</ul>';
+    } else {
         $active_trail = menu_set_active_trail();
         //dispose home
         array_shift($active_trail);
@@ -414,7 +383,7 @@ function designssquare_lib_template_api_menu_tree(&$variables)
         $tree = menu_tree_all_data($menu_name, NULL);
         $depth = 0;
         //rebuilds menu tree with link_output,depth,active etc present
-        $menu_name_final = str_replace('-','_',$menu_name);
+        $menu_name_final = str_replace('-', '_', $menu_name);
         rebuild_menu_tree($tree, $menu_name_final, $depth, $active_trail_list);
 
         $menu_tapi = _menu_tapi($tree, $depth);
@@ -426,26 +395,22 @@ function designssquare_lib_template_api_menu_tree(&$variables)
     return $output;
 }
 
-//function designssquare_lib_template_api_menu_link(array $variables) {
-//    return $variables;
-//}
-
 function designssquare_lib_template_api_theme_registry_alter(&$theme_registry)
 {
 
     $path_to_theme = path_to_theme('theme', variable_get('theme_default', NULL));
     //breadcrumbs
-    if (file_exists($path_to_theme . '/templates/breadcrumbs.tpl.php')) { //only enable if the template is present
+    if (file_exists($path_to_theme . '/templates/template-api/breadcrumbs.tpl.php')) { //only enable if the template is present
         //override theme_breadcrumb
         $theme_registry['breadcrumb']['function'] = 'designssquare_lib_template_api_breadcrumb';
         //reset preprocessor to ensure breadcrumbs are in breadcrumb_tapi
         unset($theme_registry['breadcrumb']['preprocess functions']);
-        $theme_registry['breadcrumb']['preprocess functions'] = array();
-        $theme_registry['breadcrumb']['preprocess functions'][] = 'designssquare_lib_template_api_preprocess_breadcrumb';
+//        $theme_registry['breadcrumb']['preprocess functions'] = array();
+//        $theme_registry['breadcrumb']['preprocess functions'][] = 'designssquare_lib_template_api_preprocess_breadcrumb';
     }
 
     //search box
-    if (file_exists($path_to_theme . '/templates/search.tpl.php')) { //only enable if the template is present
+    if (file_exists($path_to_theme . '/templates/template-api/search.tpl.php')) { //only enable if the template is present
         //override search form
         $theme_registry['search_block_form']['function'] = 'designssquare_lib_template_api_search';
 
@@ -456,14 +421,11 @@ function designssquare_lib_template_api_theme_registry_alter(&$theme_registry)
     }
 
 
-    if (file_exists($path_to_theme . '/templates/main-menu.tpl.php')) { //only enable if the template is present
+    if (file_exists($path_to_theme . '/templates/template-api/main-menu.tpl.php') || file_exists($path_to_theme . '/templates/template-api/user-menu.tpl.php') || file_exists($path_to_theme . '/templates/template-api/bottom-menu.tpl.php')) { //only enable if the template is present
         //main menu
-    $theme_registry['menu_tree']['function'] = 'designssquare_lib_template_api_menu_tree';
-//    unset($theme_registry['menu_tree']['render element']);
-    unset($theme_registry['menu_tree']['preprocess functions']);
+        $theme_registry['menu_tree']['function'] = 'designssquare_lib_template_api_menu_tree';
+        unset($theme_registry['menu_tree']['preprocess functions']);
     }
-//    array_search();
-//    $theme_registry['menu_link']['function'] = 'designssquare_lib_template_api_menu_link';
 
 }
 
