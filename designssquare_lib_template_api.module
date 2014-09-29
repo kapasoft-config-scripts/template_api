@@ -372,7 +372,7 @@ function designssquare_lib_template_api_menu_tree(&$variables)
 
     if ( !file_exists($menu_template) || !file_exists($menu_link_template)) {
         //in admin path use bootstrap_menu_tree
-        $output = '<ul class="menu nav navbar-nav">' . $variables['tree'] . '</ul>';
+        $output = '<ul class="menu nav navbar-nav">' . ((isset($variables['tree'])) ? $variables['tree'] : '') . '</ul>';
     } else {
         $active_trail = menu_set_active_trail();
         //dispose home

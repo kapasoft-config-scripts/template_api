@@ -1,7 +1,7 @@
 name = DesignsSquare.com TEMPLATE_API widget
 description = functionality for Drupal TEMPLATE_API widget
 core = "7.x"
-version = v0.0.4
+version = v0.0.5
 project = designssquare_lib_template_api
 package = designssquare.com.widget.template_api
 ;;core = "7.x"
