@@ -4,51 +4,39 @@ require dirname(__FILE__) . '/includes/template_api.inc';
 function designssquare_lib_template_api_preprocess_html(&$vars)
 {
 //    if (!path_is_admin(current_path())) {
-        //NO templating in ADMIN
-        /****Header******/
-        $header_tapi = _header_tapi();
-        //header TAPI general
-        $vars['header_tapi'] = $header_tapi;
-        //header TAPI for header.tpl.php
-//        $header = theme('template_api_header', array(
-//            'header_tapi' => $header_tapi,
-//            'vars_tapi' => $vars,
-//        ));
+    //NO templating in ADMIN
+    /****Header******/
+    $header_tapi = _header_tapi();
+    //header TAPI general
+    $vars['header_tapi'] = $header_tapi;
+    $path_to_theme = drupal_get_path('theme', variable_get('theme_default'));
+    //breadcrumbs
+    if (file_exists($path_to_theme . '/templates/template-api/header.tpl.php')) {
         $header = array(
             '#theme' => 'template_api_header',
             '#header_tapi' => $header_tapi,
             '#vars_tapi' => $vars,
         );
-//        if(!isset($header) || empty($header)){
-//            registry_rebuild();
-//            $header = theme('template_api_header', array(
-//                'header_tapi' => $header_tapi,
-//                'vars_tapi' => $vars,
-//            ));
-//        }
-
-//        variable_get('theme_default','empty');
         $vars['header'] = $header;
-        /***Footer***/
-        $footer_tapi = _footer_tapi();
-        //header TAPI for header.tpl.php
-        $footer = theme('template_api_footer', array(
-            'footer_tapi' => $footer_tapi,
-            'vars_tapi' => $vars,
-        ));
-//        if(!isset($footer) || empty($footer)){
-//            registry_rebuild();
-//            $footer = theme('template_api_footer', array(
-//                'footer_tapi' => $footer_tapi,
-//                'vars_tapi' => $vars,
-//            ));
-//        }
-        $vars['footer'] = $footer;
-//    }
+    }
 
-    $reqUrl = $_GET['q'];
+    /***Footer***/
+    $path_to_theme = drupal_get_path('theme', variable_get('theme_default'));
+    //breadcrumbs
+    if (file_exists($path_to_theme . '/templates/template-api/footer.tpl.php')) {
+    $footer_tapi = _footer_tapi();
+    //header TAPI for header.tpl.php
+    $footer = theme('template_api_footer', array(
+        'footer_tapi' => $footer_tapi,
+        'vars_tapi' => $vars,
+    ));
+    $vars['footer'] = $footer;
+    }
+
+
 
     //user handling
+    //    $reqUrl = $_GET['q'];
 //    if(preg_match ('/user/', $reqUrl) && !$vars['logged_in']){
 //        $user_tapi = array();
 //        $user_tapi['login'] = _user_login_tapi();
@@ -66,7 +54,7 @@ function designssquare_lib_template_api_preprocess_page(&$vars)
     $vars['page_tapi'] = _page_tapi($vars);
 
     /**CONTACT TAPI***/
-    if (file_exists(path_to_theme('theme', variable_get('theme_default', NULL)) . '/templates/contact.tpl.php')) {
+    if (file_exists(drupal_get_path('theme', variable_get('theme_default')) . '/templates/template-api/contact.tpl.php')) {
         //contact page
         $vars['contact_form'] = array(
             '#theme' => 'template_api_contact_form',
@@ -99,7 +87,7 @@ function designssquare_lib_template_api_preprocess_page(&$vars)
 
 function designssquare_lib_template_api_theme()
 {
-    $path_to_theme = path_to_theme('theme', variable_get('theme_default', NULL));
+    $path_to_theme = drupal_get_path('theme', variable_get('theme_default'));
     return array(
         'template_api_breadcrumbs' => array(
             'template' => 'breadcrumbs',
@@ -251,24 +239,24 @@ function designssquare_lib_template_api_breadcrumb(&$variables)
 //            $output .= '<div class="breadcrumb">' . implode(' » ', $breadcrumbs) . '</div>';
 //        }
 //    } else {
-        //get the current content from cache
-        $content = drupal_set_page_content();
-        //indicate that you are not adding content but just reading it by setting static variable 'system...added' to False
-        $system_main_content_added = & drupal_static('system_main_content_added');
-        $system_main_content_added = FALSE;
+    //get the current content from cache
+    $content = drupal_set_page_content();
+    //indicate that you are not adding content but just reading it by setting static variable 'system...added' to False
+    $system_main_content_added = & drupal_static('system_main_content_added');
+    $system_main_content_added = FALSE;
 
-        //include all blocks
-        include_blocks($content);
+    //include all blocks
+    include_blocks($content);
 
-        //make it consistent with Drupal
-        $content['page'] = $content['region'];
-        // Determine if we are to display the breadcrumb.
-        $bootstrap_breadcrumb = theme_get_setting('bootstrap_breadcrumb');
+    //make it consistent with Drupal
+    $content['page'] = $content['region'];
+    // Determine if we are to display the breadcrumb.
+//    $bootstrap_breadcrumb = theme_get_setting('bootstrap_breadcrumb');
 //        if (($bootstrap_breadcrumb == 1 || ($bootstrap_breadcrumb == 2 && arg(0) == 'admin')) && !empty($breadcrumbs)) {
-            $output = theme('template_api_breadcrumbs', array(
-                'breadcrumbs_tapi' => $breadcrumbs,
-                'vars_tapi' => $content,
-            ));
+    $output = theme('template_api_breadcrumbs', array(
+        'breadcrumbs_tapi' => $breadcrumbs,
+        'vars_tapi' => $content,
+    ));
 //        }
 //    }
 
@@ -349,12 +337,12 @@ function ds_menu_get_active_breadcrumb()
 //            if (path_is_admin(current_path())) {
 //                $breadcrumb[] = l($parent['title'], $parent['href'], $parent['localized_options']);
 //            } else {
-                $breadcrumb[] = array(
-                    'label' => $parent['title'],
-                    'url' => '/' . $parent['href'],
-                    'last' => false,
-                    'first' => false,
-                );
+            $breadcrumb[] = array(
+                'label' => $parent['title'],
+                'url' => '/' . $parent['href'],
+                'last' => false,
+                'first' => false,
+            );
 //            }
         }
     }
@@ -367,10 +355,10 @@ function designssquare_lib_template_api_menu_tree(&$variables)
     $menu_item_raw = array_shift($variables);
     $menu_item = array_shift($menu_item_raw);
     $menu_name = $menu_item['#original_link']['menu_name'];
-    $menu_template = drupal_get_path('theme', variable_get('theme_default', NULL)) . '/templates/template-api/' . $menu_name . '.tpl.php';
-    $menu_link_template = drupal_get_path('theme', variable_get('theme_default', NULL)) . '/templates/template-api/' . $menu_name . '-link.tpl.php';
+    $menu_template = drupal_get_path('theme', variable_get('theme_default')) . '/templates/template-api/' . $menu_name . '.tpl.php';
+    $menu_link_template = drupal_get_path('theme', variable_get('theme_default')) . '/templates/template-api/' . $menu_name . '-link.tpl.php';
 
-    if ( !file_exists($menu_template) || !file_exists($menu_link_template)) {
+    if (!file_exists($menu_template) || !file_exists($menu_link_template)) {
         //in admin path use bootstrap_menu_tree
         $output = '<ul class="menu nav navbar-nav">' . ((isset($variables['tree'])) ? $variables['tree'] : '') . '</ul>';
     } else {
@@ -398,7 +386,7 @@ function designssquare_lib_template_api_menu_tree(&$variables)
 function designssquare_lib_template_api_theme_registry_alter(&$theme_registry)
 {
 
-    $path_to_theme = path_to_theme('theme', variable_get('theme_default', NULL));
+    $path_to_theme = drupal_get_path('theme', variable_get('theme_default'));
     //breadcrumbs
     if (file_exists($path_to_theme . '/templates/template-api/breadcrumbs.tpl.php')) { //only enable if the template is present
         //override theme_breadcrumb
