@@ -515,12 +515,16 @@
         <tr>
             <td>User TAPI</td>
             <td>$user_tapi['name']::[STRING]<br>
-                $user_tapi['avatar']::[STRING] (url to profile img)<br>
+                $user_tapi['avatar']['url']::[STRING] (url to profile img)<br>
+                $user_tapi['avatar']['width']::[STRING] (the width from image style "Avatar")<br>
+                $user_tapi['avatar']['height']::[STRING] (the height from image style "Avatar")<br>
                 $user_tapi['email']::[STRING]<br>
                 $user_tapi['user-login']['url']::[STRING]<br>
                 $user_tapi['user-login']['text']::[STRING]<br>
                 $user_tapi['profile']['url']::[STRING]<br>
                 $user_tapi['profile']['text']::[STRING]<br>
+                $user_tapi['profile']['width']::[STRING](the width from image style "User Profile")<br>
+                $user_tapi['profile']['height']::[STRING](the height from image style "User Profile")<br>
                 $user_tapi['is_authenticated']::[STRING]<br>
             <td>_user_tapi()</td>
             <td>any template file for request with word 'user' part of the url</td>
