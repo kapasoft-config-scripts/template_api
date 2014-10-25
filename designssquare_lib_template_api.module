@@ -241,7 +241,9 @@ function designssquare_lib_template_api_breadcrumb(&$variables)
                 if(!$breadcrumb['first']){
                     $output .= ' » ';
                 }
-                $output .= '<a href="'.$breadcrumb['url'].'">'.$breadcrumb['label'].' </a>';
+                if(isset($breadcrumb['url']) && isset($breadcrumb['label'])){
+                    $output .= '<a href="'.$breadcrumb['url'].'">'.$breadcrumb['label'].' </a>';
+                }
             }
             $output .= '</div>';
         }
