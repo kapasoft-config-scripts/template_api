@@ -527,7 +527,7 @@ function rebuild_menu_tree(&$tree, $menu_name, $depth = 0, $active_trail_list = 
 
 function filter_active_path($menu_item)
 {
-    return $menu_item['link_path'];
+    return (isset($menu_item['link_path'])) ? base_path().$menu_item['link_path'] : base_path().$menu_item['path'];
 }
 
 //wrapper around the internal _menu_tapi()
