@@ -251,7 +251,7 @@
         <tr>
             <td>Header</td>
             <td>header</td>
-            .tpl.php</td>
+            <td>header.tpl.php</td>
             <td>
                 <ul>
                     <li>$header_tapi:[ARRAY] of Header TAPI</li>
@@ -259,6 +259,7 @@
                 </ul>
             </td>
         </tr>
+        <tr>@ToDo</tr>
     </table>
 </section>
 <section id="header_tapi">
@@ -419,9 +420,9 @@
 
     <p>To render any of the contact forms at any place in page scope:<br>
     <code>
-        <?php print render($contact_form)?><br>
-        <?php print render($contact_block_form)?><br>
-        <?php print render($contact_inquiry_form)?><br>
+         print render($contact_form)<br>
+         print render($contact_block_form)<br>
+         print render($contact_inquiry_form)<br>
     </code>
     </p>
     <p>Contact API utilizes Drupal core module - Contact, so it needs to be enabled in order for Contact Template API to work</p>
