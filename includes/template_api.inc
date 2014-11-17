@@ -100,6 +100,7 @@ function _theme_settings_tapi()
     $theme_tapi['footer']['index'] = 'ds_theme_footer';
     $theme_tapi['footer']['value'] = variable_get('ds_theme_footer', theme_get_setting('ds_theme_footer'));
 
+    drupal_alter('theme_tapi', $theme_tapi);
     return $theme_tapi;
 }
 
@@ -199,6 +200,7 @@ function _page_tapi($vars)
         $page_tapi['title'] = t('User Account');
     }
 
+    drupal_alter('page_tapi', $page_tapi);
     return $page_tapi;
 
 }
@@ -270,6 +272,8 @@ function _search_tapi()
     $form['hidden_input'] = render($search_form_array['form_build_id']);
     $form['hidden_input2'] = render($search_form_array['form_id']);
     $form['hidden_input3'] = (isset($search_form_array['form_token'])) ? render($search_form_array['form_token']) : '';
+
+    drupal_alter('search_tapi', $form);
     return $form;
 }
 
@@ -315,7 +319,6 @@ function _contact_tapi($category = 'contact')
     $contact_tapi['hidden_input2'] = render($contact_form_array['form_id']);
     $contact_tapi['hidden_input3'] = (isset($contact_form_array['form_token'])) ? render($contact_form_array['form_token']) : '';
 
-    //
     drupal_alter('contact_tapi', $contact_tapi);
     return $contact_tapi;
 }
@@ -353,6 +356,7 @@ function _comment_tapi($comment)
         $comment_tapi['links']['access'] = FALSE;
     }
 
+    drupal_alter('comment_tapi', $comment_tapi);
     return $comment_tapi;
 }
 
@@ -375,11 +379,12 @@ function _menu_link_tapi($link, $depth, $sub_menu)
     return $link_tapi;
 }
 
-function _menu_tapi($links, $depth)
+function _menu_tapi($links, $depth, $menu_name = '')
 {
     $menu_tapi = array();
     $menu_tapi['depth'] = $depth;
     $menu_tapi['links'] = $links;
+    drupal_alter('menu_tapi', $menu_tapi, $menu_name);
     return $menu_tapi;
 }
 
@@ -432,9 +437,9 @@ function _user_tapi(){
         }
     }
 
-    $email = (isset($user->mail)) ? $user->mail : 'fan@drupal.org';
+    $email = (isset($user->mail)) ? $user->mail : 'fan@designssquare.org';
 
-    return array(
+    $user_tapi =  array(
         'name' => $name,
         'avatar' => array(
             'url' => $profile_img_url,
@@ -454,6 +459,9 @@ function _user_tapi(){
         ),
         'is_authenticated' => $authenticated,
     );
+
+    drupal_alter('user_tapi', $user_tapi);
+    return $user_tapi;
 }
 
 function _user_pass_tapi(){
@@ -465,6 +473,7 @@ function _user_pass_tapi(){
     $password['email_name'] = 'name';
     $password['hidden_form_id'] = render($pass_form['form_id']);
     $password['hidden_build_id'] = render($pass_form['form_build_id']);
+    drupal_alter('password_reset_tapi', $password);
     return $password;
 }
 
@@ -478,6 +487,7 @@ function _user_registration_tapi(){
     $registration['email_name'] = 'mail';
     $registration['hidden_build_id'] = render($register_form['form_build_id']);
     $registration['hidden_form_id'] = render($register_form['form_id']);
+    drupal_alter('registration_tapi', $registration);
     return $registration;
 }
 
@@ -490,6 +500,7 @@ function _user_login_tapi(){
     $login['pass_name'] = 'pass';
     $login['hidden_form_id'] = render($login_form['form_id']);
     $login['hidden_build_id'] = render($login_form['form_build_id']);
+    drupal_alter('login_tapi', $login);
     return $login;
 }
 
