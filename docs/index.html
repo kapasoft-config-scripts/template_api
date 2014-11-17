@@ -140,6 +140,9 @@
         <li><a href="#contact_tapi">Contact TAPI</a></li>
         <li><a href="#search_tapi">Search TAPI</a></li>
         <li><a href="#user_tapi">User TAPI</a></li>
+        <li><a href="#registration_tapi">Registration TAPI</a></li>
+        <li><a href="#login_tapi">Login TAPI</a></li>
+        <li><a href="#password_reset_tapi">Password Reset TAPI</a></li>
         <li><a href="#theme_settings_tapi">Theme Settings TAPI</a></li>
         <li><a href="#theme_func">Theme Functions</a></li>
         <li><a href="#customize">Customize</a></li>
@@ -216,12 +219,17 @@
         <li>breadcrumbs.tpl.php</li>
         <li>contact.tpl.php</li>
         <li>search.tpl.php</li>
+        <li>header.tpl.php</li>
+        <li>footer.tpl.php</li>
+        <li>login.tpl.php</li>
+        <li>registration.tpl.php</li>
+        <li>password-reset.tpl.php</li>
         <li>main-menu.tpl.php</li>
         <li>main-menu-link.tpl.php</li>
         <li>user-menu.tpl.php</li>
         <li>user-menu-link.tpl.php</li>
-        <li>header.tpl.php</li>
-        <li>footer.tpl.php</li>
+        <li>bottom-menu.tpl.php</li>
+        <li>bottom-menu-link.tpl.php</li>
     </ul>
     </p>
 
@@ -232,8 +240,8 @@
         to its static nature of being present on all pages while others not always or they are dynamic configurable by
         UI. For the header and footer templates,
         you have to explicitly specify to import them in the Drupal html.tpl.php as following:<br>
-        <code><?php print $header ?></code><br>
-        <code><?php print $footer ?></code><br>
+        <code>&lt;?php print $header ?&gt;</code><br>
+        <code>&lt;?php print $footer ?&gt;</code><br>
     </p>
 </section>
 <section id="tapi_overview">
@@ -318,6 +326,24 @@
             <td>The user TAPI includes registration, login and password reset info a long the user profile info</td>
         </tr>
         <tr>
+            <td>Registration TAPI</td>
+            <td>$registration_tapi (see details at <a href="#!/registration_tapi">'Registration TAPI'</a> section)</td>
+            <td>registration.tpl.php</td>
+            <td>all info for registration form</td>
+        </tr>
+        <tr>
+            <td>Login TAPI</td>
+            <td>$login_tapi (see details at <a href="#!/login_tapi">'Login TAPI'</a> section)</td>
+            <td>login.tpl.php</td>
+            <td>all info for login form</td>
+        </tr>
+        <tr>
+            <td>Password Reset TAPI</td>
+            <td>$password_reset_tapi (see details at <a href="#!/password_reset_tapi">'Password Reset TAPI'</a> section)</td>
+            <td>password-reset.tpl.php</td>
+            <td>all info for password reset form</td>
+        </tr>
+        <tr>
             <td>Theme Settings TAPI</td>
             <td>$theme_tapi (see details at <a href="#!/theme_settings_tapi">'Theme Settings TAPI'</a> section)</td>
             <td>Anywhere you include it typically in theme-settings.php</td>
@@ -390,7 +416,7 @@
             </td>
         </tr>
         <tr>
-            <td>Header</td>
+            <td>Footer</td>
             <td>footer.tpl.php</td>
             <td>
                 <ul>
@@ -813,7 +839,7 @@
             <td>any template file for request with word 'user' part of the url</td>
         </tr>
         <tr>
-            <td>User TAPI Registration/td>
+            <td>User TAPI Registration</td>
             <td>$user_tapi['registration']['form_id']::[STRING](form id for registration form)<br>
                 $user_tapi['registration']['form_action']::[STRING] (action for registration form)<br>
                 $user_tapi['registration']['email_name']::[STRING](name attribute for input field of email) <br>
@@ -823,6 +849,78 @@
                 $user_tapi['registration']['hidden_form_id']::[STRING](hidden field necessary for registration form)<br>
             <td>_user_registration_tapi()</td>
             <td>any template file for request with word 'user' part of the url</td>
+        </tr>
+    </table>
+</section>
+<section id="registration_tapi">
+    <h3>Registration Template API</h3>
+    <hr>
+    <p>In the following is Registration Template API in detail</p>
+    <table>
+        <thead>
+        <th>Content Type</th>
+        <th>API</th>
+        <th>Methods Implementing API</th>
+        <th>Scope</th>
+        </thead>
+        <tr>
+            <td>Registration TAPI </td>
+            <td>$registration_tapi['form_id']::[STRING](form id for registration form)<br>
+                $registration_tapi['form_action']::[STRING] (action for registration form)<br>
+                $registration_tapi['email_name']::[STRING](name attribute for input field of email) <br>
+                $registration_tapi['user_name']::[STRING](name attribute for input field of username) <br>
+                $registration_tapi['hidden_build_id']::[STRING](hidden field necessary for registration
+                form)<br>
+                $registration_tapi['hidden_form_id']::[STRING](hidden field necessary for registration form)<br>
+            <td>_user_registration_tapi()</td>
+            <td>template file registration.tpl.php</td>
+        </tr>
+    </table>
+</section>
+<section id="login_tapi">
+    <h3>Login Template API</h3>
+    <hr>
+    <p>In the following is Login Template API in detail</p>
+    <table>
+        <thead>
+        <th>Content Type</th>
+        <th>API</th>
+        <th>Methods Implementing API</th>
+        <th>Scope</th>
+        </thead>
+        <tr>
+            <td>Login TAPI</td>
+            <td>$login_tapi['form_id']::[STRING](form id for login form)<br>
+                $login_tapi['form_action']::[STRING] (action for login form)<br>
+                $login_tapi['user_name']::[STRING](name attribute for input field of username) <br>
+                $login_tapi['pass_name']::[STRING](name attribute for input field of password)<br>
+                $login_tapi['hidden_build_id']::[STRING](hidden field necessary for login form)<br>
+                $login_tapi['hidden_form_id']::[STRING](hidden field necessary for login form)<br>
+            <td>_user_login_tapi()</td>
+            <td>template file login.tpl.php</td>
+        </tr>
+    </table>
+</section>
+<section id="password_reset_tapi">
+    <h3>Password Reset Template API</h3>
+    <hr>
+    <p>In the following is Password Reset Template API in detail</p>
+    <table>
+        <thead>
+        <th>Content Type</th>
+        <th>API</th>
+        <th>Methods Implementing API</th>
+        <th>Scope</th>
+        </thead>
+        <tr>
+            <td>Password Reset TAPI</td>
+            <td>$password_reset_tapi['form_id']::[STRING](form id for password reset form)<br>
+                $password_reset_tapi['form_action']::[STRING] (action for password reset form)<br>
+                $password_reset_tapi['email_name']::[STRING](name attribute for input field of email) <br>
+                $password_reset_tapi['hidden_build_id']::[STRING](hidden field necessary for password reset form)<br>
+                $password_reset_tapi['hidden_form_id']::[STRING](hidden field necessary for password reset form)<br>
+            <td>_user_pass_tapi()</td>
+            <td>tempalte file password-reset.tpl.php</td>
         </tr>
     </table>
 </section>
