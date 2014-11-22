@@ -245,6 +245,7 @@ noscript p{
 }
 #documenter_content table{
 	border-collapse:collapse;
+    width:100%;
 }
 #documenter_content table th{
 	font-weight:700;

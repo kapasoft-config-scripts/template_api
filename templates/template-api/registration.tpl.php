@@ -324,7 +324,7 @@ DesignsSquare.com Template API template file - registration.tpl.php with the fol
     <?php print $registration_tapi['hidden_build_id'];?>
     <?php print $registration_tapi['hidden_form_id'];?>
     <button id="register-back-btn" type="button" class="btn">
-        <i class="m-icon-swapleft"></i> Back </button>
+        <i class="m-icon-swapleft"></i><a href="<?php print $registration_tapi['actions']['login']['path']?>"> Back </a></button>
     <button type="submit" id="register-submit-btn" class="btn blue pull-right">
         Sign Up <i class="m-icon-swapright m-icon-white"></i>
     </button>

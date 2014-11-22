@@ -14,10 +14,23 @@ Designssquare.com Template API template file - header.tpl.php with following TAP
                 $header_tapi['site_slogan']['is_enabled']::[STRING] <br>
                 //user<br>
                 $header_tapi['user']::[ARRAY] everything from User TAPI(_user_tapi()) <br>
+                $header_tapi['user']['name']::[STRING]<br>
+                $header_tapi['user']['avatar']['url']::[STRING] (url to profile img)<br>
+                $header_tapi['user']['avatar']['width']::[STRING] (the width from image style "Avatar")<br>
+                $header_tapi['user']['avatar']['height']::[STRING] (the height from image style "Avatar")<br>
+                $header_tapi['user']['email']::[STRING]<br>
+                $header_tapi['user']['link']['path']::[STRING](the path to user profile if registered user or login page for anonymous visitor )<br>
+                $header_tapi['user']['link']['text']::[STRING](the name of User or anonymous name like ' Mate' as configured in <a href="#!/configuration">external configurations</a>)<br>
+                $header_tapi['user']['login-link']['path']::[STRING](the path to login/logout )<br>
+                $header_tapi['user']['logi-link']['text']::[STRING](the text for link to login/logout)<br>
+                $header_tapi['user']['img']['url']::[STRING]<br>
+                $header_tapi['user']['img']['width']::[STRING](the width from image style "User Profile")<br>
+                $header_tapi['user']['img']['height']::[STRING](the height from image style "User Profile")<br>
+                $header_tapi['user']['is_authenticated']::[STRING]
                 //settings<br>
                 $header_tapi['settings']::[STRING]
 2. $vars_tapi
-    - Drupal $variables passed on(regions in $vars_tapi[page][region-id])
+    - Drupal $variables passed on(regions in $vars_tapi['page']['region-id]')
 -->
 
 <div class="page-header navbar <?php print $header_tapi['class'];?>">

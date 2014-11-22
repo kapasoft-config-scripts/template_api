@@ -1,5 +1,5 @@
 <!--
-DesignsSquare.com Template API template file - main-menu.tpl.php with the following TAPI:
+DesignsSquare.com Template API template file - main-menu-link.tpl.php with the following TAPI:
 1. $link_tapi
    - array of variables for main menu item with following API:
                 $link_tapi['title']::[STRING](menu link name)<br>

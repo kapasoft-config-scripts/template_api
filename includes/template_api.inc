@@ -37,7 +37,8 @@ function _breadcrumb_tapi($node = null)
     return $breadcrumb_tapi;
 }
 
-function _breadcrumb_link(){
+function _breadcrumb_link()
+{
     $breadcrumb_tapi = array();
     $breadcrumb_tapi['url'] = '#';
     $breadcrumb_tapi['label'] = '';
@@ -195,7 +196,7 @@ function _page_tapi($vars)
 
     //for user login set title
     global $user;
-    if(empty($page_tapi['title']) && preg_match('/user/',$_GET['q']) && !$user->uid){
+    if (empty($page_tapi['title']) && preg_match('/user/', $_GET['q']) && !$user->uid) {
         //authenticated user){
         $page_tapi['title'] = t('User Account');
     }
@@ -239,7 +240,7 @@ function _header_tapi()
     /*****Theme*****/
 
     $head_tapi['settings'] = array();
-    $head_tapi['settings']['url'] = base_path() . 'admin/appearance/settings/'.$GLOBALS['theme'];
+    $head_tapi['settings']['url'] = base_path() . 'admin/appearance/settings/' . $GLOBALS['theme'];
     $head_tapi['settings']['text'] = t(' Settings');
 
     /*********making backwards compatable**************/
@@ -388,58 +389,72 @@ function _menu_tapi($links, $depth, $menu_name = '')
     return $menu_tapi;
 }
 
-function _user_tapi(){
-    global $conf;
+function _user_tapi()
+{
     global $user;
-    $name = (!empty($conf['anonymous'])) ? $conf['anonymous']  : 'Mate';
-    $profile_img_url = base_path().drupal_get_path('module','designssquare_lib_template_api').'/assets/author.png';
+    $name = ($user_anonymous_name = theme_get_setting('ds_user_anonymous_name')) ? $user_anonymous_name : 'Mate';
 
-    if($user->uid){
+    $profile_img_url = ($profile_img_url_var = theme_get_setting('ds_profile_img_url')) ? $profile_img_url_var : base_path() . drupal_get_path('module', 'designssquare_lib_template_api') . '/assets/author.png';
+
+    if ($user->uid) {
         //authenticated user
         $user_profile = user_load($user->uid);
-        if(isset($user_profile->picture) && $user_profile->picture != "0"){
+        if (isset($user_profile->picture) && $user_profile->picture != "0") {
             //avatar photo is set
             $profile_img_url = image_style_url("medium", $user_profile->picture->uri);
         }
-        $name = ' '.$user->name;
-        $url = base_path().'user/logout';
-        $content = t(' Logout');
-        $profile_url = 'user';
-        $profile_content = t(' My Profile');
+        $name = ' ' . $user->name;
+        $login_link_path = base_path() . 'user/logout';
+        $login_link_text = ($logout_menu_item = theme_get_setting('ds_logout_menu_item_text')) ? $logout_menu_item : t(' Logout');
+        $profile_url = base_path() . 'user/' . $user->uid;
         $authenticated = True;
-    }else{
-        $url = base_path().'user';
-        $content = t(' Login');
+    } else {
+        $login_link_path = base_path() . 'user';
+        $login_link_text = ($login_menu_item = theme_get_setting('ds_login_menu_item_text')) ? $login_menu_item : t(' Login');
         $authenticated = False;
-        $profile_url = $url;
-        $profile_content = t(' My Profile');
+        $profile_url = $login_link_path;
     }
+
+    $profile_link_text = ($profile_menu_item = theme_get_setting('ds_profile_menu_item_text')) ? $profile_menu_item : t(' My Profile');
+
 
     //profile style
     $profile_width = '259';
     $profile_height = '150';
-    $profile_style = image_style_load('ds_user_profile');
-    foreach($profile_style['effects'] as $effect){
-        if($effect['name'] == 'image_resize'){
-            $profile_width = (isset($effect['data']['width'])) ? $effect['data']['width'] : '259';
-            $profile_height = (isset($effect['data']['height'])) ? $effect['data']['height'] : '150';
+    if ($profile_style = image_style_load('ds_user_profile')) {
+        foreach ($profile_style['effects'] as $effect) {
+            if ($effect['name'] == 'image_resize') {
+                $profile_width = (isset($effect['data']['width'])) ? $effect['data']['width'] : '259';
+                $profile_height = (isset($effect['data']['height'])) ? $effect['data']['height'] : '150';
+            }
         }
+    } else {
+        //ds_user_profile images style is not present...read external configurations
+        $profile_width = ($theme_profile_width = theme_get_setting('ds_user_profile_width')) ? $theme_profile_width : '259';
+        $profile_height = ($theme_profile_height = theme_get_setting('ds_user_profile_height')) ? $theme_profile_height : '150';
     }
+
 
     //avatar style
     $avatar_width = '29';
     $avatar_height = '29';
-    $avatar_style = image_style_load('ds_avatar');
-    foreach($avatar_style['effects'] as $effect){
-        if($effect['name'] == 'image_resize'){
-            $avatar_width = (isset($effect['data']['width'])) ? $effect['data']['width'] : '29';
-            $avatar_height = (isset($effect['data']['height'])) ? $effect['data']['height'] : '29';
+//    $avatar_style = image_style_load('ds_avatar');
+    if ($avatar_style = image_style_load('ds_avatar')) {
+        foreach ($avatar_style['effects'] as $effect) {
+            if ($effect['name'] == 'image_resize') {
+                $avatar_width = (isset($effect['data']['width'])) ? $effect['data']['width'] : '29';
+                $avatar_height = (isset($effect['data']['height'])) ? $effect['data']['height'] : '29';
+            }
         }
+    } else {
+        //ds_avatar images style is not present...read external configurations
+        $avatar_width = ($theme_avatar_width = theme_get_setting('ds_avatar_width')) ? $theme_avatar_width : '29';
+        $avatar_height = ($theme_avatar_height = theme_get_setting('ds_avatar_height')) ? $theme_avatar_width : '29';
     }
 
-    $email = (isset($user->mail)) ? $user->mail : 'fan@designssquare.org';
+    $email = (isset($user->mail)) ? $user->mail : (($default_user_email = theme_get_setting('ds_default_user_email')) ? $default_user_email : 'fan@designssquare.org');
 
-    $user_tapi =  array(
+    $user_tapi = array(
         'name' => $name,
         'avatar' => array(
             'url' => $profile_img_url,
@@ -447,13 +462,16 @@ function _user_tapi(){
             'height' => $avatar_height,
         ),
         'email' => $email,
-        'user-login' => array(
-            'url' => $url,
-            'text' => $content,
+        'login-link' => array(
+            'path' => $login_link_path,
+            'text' => $login_link_text
         ),
-        'profile' => array(
+        'link' => array(
+            'path' => $profile_url,
+            'text' => $profile_link_text,
+        ),
+        'img' => array(
             'url' => $profile_img_url,
-            'text' => $profile_content,
             'width' => $profile_width,
             'height' => $profile_height
         ),
@@ -464,7 +482,8 @@ function _user_tapi(){
     return $user_tapi;
 }
 
-function _user_pass_tapi(){
+function _user_pass_tapi()
+{
     $password = array();
     $pass_form_name = 'user-pass';
     $pass_form = drupal_get_form('user_pass');
@@ -473,11 +492,16 @@ function _user_pass_tapi(){
     $password['email_name'] = 'name';
     $password['hidden_form_id'] = render($pass_form['form_id']);
     $password['hidden_build_id'] = render($pass_form['form_build_id']);
+
+    //other actions
+    $password['actions'] = _user_actions();
+
     drupal_alter('password_reset_tapi', $password);
     return $password;
 }
 
-function _user_registration_tapi(){
+function _user_registration_tapi()
+{
     $registration = array();
     $register_form_name = 'user_register_form';
     $register_form = drupal_get_form($register_form_name);
@@ -487,11 +511,16 @@ function _user_registration_tapi(){
     $registration['email_name'] = 'mail';
     $registration['hidden_build_id'] = render($register_form['form_build_id']);
     $registration['hidden_form_id'] = render($register_form['form_id']);
+
+    //other actions
+    $registration['actions'] = _user_actions();
+
     drupal_alter('registration_tapi', $registration);
     return $registration;
 }
 
-function _user_login_tapi(){
+function _user_login_tapi()
+{
     $login = array();
     $login_form = drupal_get_form('user_login');
     $login['form_action'] = $login_form['#action'];
@@ -500,10 +529,55 @@ function _user_login_tapi(){
     $login['pass_name'] = 'pass';
     $login['hidden_form_id'] = render($login_form['form_id']);
     $login['hidden_build_id'] = render($login_form['form_build_id']);
+
+    //other actions
+    $login['actions'] = _user_actions();
+
     drupal_alter('login_tapi', $login);
     return $login;
 }
 
+function _status_message_tapi($clear = false){
+
+    //initiate supported messages
+    $status_message_tapi = array();
+    $status_message_tapi['status'] = array();
+    $status_message_tapi['status']['enabled'] = false;
+    $status_message_tapi['status']['heading'] = ($ds_massage_status_heading = theme_get_setting('ds_message_status_heading')) ? $ds_massage_status_heading : t(' ');
+    $status_message_tapi['status']['size'] = 0;
+    $status_message_tapi['status']['messages'] = array();
+    $status_message_tapi['error'] = array();
+    $status_message_tapi['error']['enabled'] = false;
+    $status_message_tapi['error']['heading'] = ($ds_massage_error_heading = theme_get_setting('ds_message_error_heading')) ? $ds_massage_error_heading : t(' ');
+    $status_message_tapi['error']['size'] = 0;
+    $status_message_tapi['error']['messages'] = array();
+    $status_message_tapi['warning'] = array();
+    $status_message_tapi['warning']['enabled'] = false;
+    $status_message_tapi['warning']['heading'] = ($ds_massage_warning_heading = theme_get_setting('ds_message_warning_heading')) ? $ds_massage_warning_heading : t(' ');
+    $status_message_tapi['warning']['size'] = 0;
+    $status_message_tapi['warning']['messages'] = array();
+    $status_message_tapi['info'] = array();
+    $status_message_tapi['info']['enabled'] = false;
+    $status_message_tapi['info']['heading'] = ($ds_massage_info_heading = theme_get_setting('ds_message_info_heading')) ? $ds_massage_info_heading : t(' ');
+    $status_message_tapi['info']['size'] = 0;
+    $status_message_tapi['info']['messages'] = array();
+
+    //loop through each message type
+    foreach (drupal_get_messages(null, $clear) as $type => $messages) {
+           foreach($messages as $key => $message){
+               $status_message_tapi[$type]['enabled'] = true;
+               $status_message_tapi[$type]['size'] = $status_message_tapi[$type]['size'] + 1;
+               $status_message_tapi[$type]['messages'] = array(
+                   'message' => $message
+               );
+           }
+    }
+
+
+    drupal_alter('status_message_tapi', $status_message_tapi);
+
+    return $status_message_tapi;
+}
 
 
 function rebuild_menu_tree(&$tree, $menu_name, $depth = 0, $active_trail_list = array())
@@ -538,14 +612,35 @@ function rebuild_menu_tree(&$tree, $menu_name, $depth = 0, $active_trail_list = 
 
 function filter_active_path($menu_item)
 {
-    return (isset($menu_item['link_path'])) ? base_path().$menu_item['link_path'] : base_path().$menu_item['path'];
+    return (isset($menu_item['link_path'])) ? base_path() . $menu_item['link_path'] : base_path() . $menu_item['path'];
 }
 
 //wrapper around the internal _menu_tapi()
-function menu_tapi($menu_name){
-    $menu = str_replace('-','_',$menu_name);
+function menu_tapi($menu_name)
+{
+    $menu = str_replace('-', '_', $menu_name);
     $tree = menu_tree_all_data($menu_name, NULL);
     rebuild_menu_tree($tree, $menu);
     return $tree;
 }
 
+/**
+ * retrieves all user actions with related link path
+ */
+function _user_actions()
+{
+    return array(
+        'register' => array(
+            'path' => base_path() . 'user/register',
+            'text' => ($register_text = (theme_get_setting('ds_user_register_text'))) ? $register_text : 'Create an account',
+        ),
+        'login' => array(
+            'path' => base_path() . 'user',
+            'text' => ($log_in_text = (theme_get_setting('ds_user_login_text'))) ? $log_in_text : 'Log in',
+        ),
+        'password-reset' => array(
+            'path' => base_path() . 'user/register',
+            'text' => ($pass_reset_text = theme_get_setting('ds_user_pass_reset_text')) ? $pass_reset_text : 'reset your password',
+        ),
+    );
+}
