@@ -270,7 +270,8 @@ function designssquare_lib_template_api_form($variables)
 
     //grab the messages
 //    $variables['messages'] = ds_bootstrap_status_messages(null,true);
-    $variables['messages'] = designssquare_lib_template_api_status_message(true);
+    $vars_temp = array('display' => null);
+    $variables['messages'] = designssquare_lib_template_api_status_message($vars_temp, true);
 
 
     switch ($variables['element']['#form_id']) {
@@ -309,13 +310,21 @@ function designssquare_lib_template_api_search()
     return $output;
 }
 
-function designssquare_lib_template_api_status_message($clear = false)
+function designssquare_lib_template_api_status_message(&$variables, $clear = false)
 {
-    $status_message_tapi = _status_message_tapi($clear);
-    $output = theme('template_api_status_message', array(
-        'status_message_tapi' => $status_message_tapi,
+
+//    bootstrap_status_messages()
+    if (path_is_admin(current_path())){
+        //for admin themes keep the original layout
+        $output = theme_status_messages($variables);
+    }else{
+        $status_message_tapi = _status_message_tapi($clear);
+        $output = theme('template_api_status_message', array(
+            'status_message_tapi' => $status_message_tapi,
 //        'vars_tapi' => $variables,
-    ));
+        ));
+    }
+
     return $output;
 }
 
@@ -583,7 +592,7 @@ function designssquare_lib_template_api_theme_registry_alter(&$theme_registry)
     }
 
 
-    //override theme_form function to remove wrap around form element, reset login/registration/password reset forms
+    //override theme_form function to remove wrap around form element, override login/registration/password reset forms
     if (!empty($theme_registry['form'])) {
         $theme_registry['form']['function'] = 'designssquare_lib_template_api_form';
     }
@@ -593,26 +602,9 @@ function designssquare_lib_template_api_theme_registry_alter(&$theme_registry)
         $theme_registry['status_messages']['function'] = 'ds_bootstrap_status_messages';
     }
 
-    if(is_tapi_enabled('status-messages')){
-        //@ToDo alter registry to include template for status messages
+    if(is_tapi_enabled('status-message')){
         $theme_registry['status_messages']['function'] = 'designssquare_lib_template_api_status_message';
     }
-    //registration form alter
-//    if (file_exists($path_to_theme . '/templates/template-api/registration.tpl.php')) { //only enable if the template is present
-//        //override registration form
-//        $theme_registry['user_register_form']['function'] = 'designssquare_lib_template_api_registration';
-
-//        unset($theme_registry['registration_form']['preprocess functions']);
-//    }
-
-
-    //password reset form alter
-//    if (file_exists($path_to_theme . '/templates/template-api/password-reset.tpl.php')) { //only enable if the template is present
-//        //override login form
-//        $theme_registry['user_pass']['function'] = 'designssquare_lib_template_api_password_reset';
-//
-////        unset($theme_registry['registration_form']['preprocess functions']);
-//    }
 
 
     //@ToDo - figure out what function to override for comments and test it for comments
@@ -664,9 +656,15 @@ function get_ds_template_path($module_name, $template_name)
 }
 
 //reusing boostrap_status_messages() formating
-function ds_bootstrap_status_messages($message_status = NULL, $clear = False)
+function ds_bootstrap_status_messages($variables, $clear = False)
 {
-//    $display = $variables['display'];
+
+    if (path_is_admin(current_path())){
+        //for admin themes keep the original layout
+        $variables = array('display' => null);
+        $output = theme_status_messages($variables);
+    }else{
+    $display = $variables['display'];
     $output = '';
 
     $status_heading = array(
@@ -688,8 +686,8 @@ function ds_bootstrap_status_messages($message_status = NULL, $clear = False)
         'info' => 'info',
     );
 
-    $message_status = (is_array($message_status)) ? null : $message_status;
-    foreach (drupal_get_messages($message_status, $clear) as $type => $messages) {
+//    $message_status = (is_array($variables['display'])) ? null : $message_status;
+    foreach (drupal_get_messages($display, $clear) as $type => $messages) {
         $class = (isset($status_class[$type])) ? ' alert-' . $status_class[$type] : '';
         $output .= "<div class=\"alert alert-block$class\">\n";
         $output .= "  <a class=\"close\" data-dismiss=\"alert\" href=\"#\">&times;</a>\n";
@@ -709,6 +707,7 @@ function ds_bootstrap_status_messages($message_status = NULL, $clear = False)
         }
 
         $output .= "</div>\n";
+    }
     }
     return $output;
 }
