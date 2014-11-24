@@ -1329,31 +1329,36 @@
         </li>
         <li><b>Refresh Cache</b></li>
     </ol>
-    <h5>How to Pass Variables To Header?</h5>
+    <h5>How to Pass Menu To Header?</h5>
 
-    <p>Lets say you have user menu that needs to be displayed in the header. To pass user menu(in our case renderable
-        array) to
-        the header, there are two ways
+    <p>Lets say you have user menu that needs to be displayed in the header. This is two step process:
     <ol>
-        <li><b>TAPI HOOK</b> Each Tempalte API has hook including Header TAPI Via hook_header_tapi_alter(), you can pass
-            the variable containing
-            rendearable array
-        </li>
-        <li><b>Via Header Variable</b> Template API usesd theme function that is later rendered. This theme function
-            takes variable
-            vars_tapi that you can update with user menu and access in the header scope
+        <li><b>Make Menu Available To Front End</b>
+            The first step is to make the menu available in the front end in our case template file - header.tpl.php
+            To do so we alter Header TAPI Via hook_header_tapi_alter() as following:
             <code><br>
-                MODULE_preporcess_html(){<br>
-                &nbsp;$vars['header']['#vars_tapi']['user_menu'] = array(<br>
-                &nbsp;&nbsp;'#theme' => 'template_api_user_menu',<br>
-                &nbsp;&nbsp;'#menu_tapi' => _menu_tapi($tree, $user_menu),<br>
-                &nbsp;);<br>
+                function bazar_header_tapi_alter(&$header_tapi){<br>
+                &nbsp;&nbsp;$menu_tree = menu_tree(variable_get('menu_main_links_source', 'user-menu'));<br>
+                &nbsp;&nbsp;$header_tapi['user_menu'] = theme('menu_tree', array('element' => $menu_tree));<br>
                 }<br>
+            </code><br>
+        Here, we use the Drupal Theme function to build user menu. Afterwards, we assign to $header_tapi to make it availabe
+            in template file - header.tpl.php
+        </li>
+        <li><b>Render At The Front End</b> Once the user menu is part of Header TAPI - $header_tapi, it is available in
+            the template file - header.tpl.php. All is left is to print it out
+            <code><br>
+                ...<br>
+                &lt;div id=&quot;nav&quot;&gt;<br>
+                &nbsp;&lt;div class=&quot;container&quot;&gt;<br>
+                &nbsp;&nbsp;&lt;?php print render($header_tapi[&quot;user_menu&quot;]); ?&gt;<br>
+                &nbsp;&lt;/div&gt;<br>
+                &nbsp;&lt;div class=&quot;border borderstrong borderpadding container&quot;&gt;&lt;/div&gt;<br>
+                ...<br>
             </code>
-            Here, we attach renderable array for user meny and then we will render in the header.tpl.php as following:
-            <code>
-                print render($vars_tapi['user_menu']);
-            </code>
+            Here, we  print out the menu in the approrpriate location in the header.tpl.php template
+            To summarize, as always its two step process. First, make the content(i.e. user menu) available to front end(template file).
+            Second, print the content in the template file. This way you can pass anything from back end to front end all done via some Template TAPI
         </li>
     </ol>
     </p>
@@ -1514,7 +1519,12 @@
     <ul>
         <li>add auto trigger for Registration, Login and Password Reset forms</li>
         <li>added status message template</li>
-        <li>added exnteral configuration from theme info file</li>
+        <li>added external configuration from theme info file</li>
+    </ul>
+    <h5>Release 0.1.4</h5>
+    <ul>
+        <li>ensure theme's breadcrumb layouts instead of admin theme breadcrumb layouts are used by authenticate user not admin role</li>
+        <li>bug fix for status message layouts to by applied for authenticated none admin role users</li>
     </ul>
 </section>
 </div>

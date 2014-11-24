@@ -312,9 +312,13 @@ function designssquare_lib_template_api_search()
 
 function designssquare_lib_template_api_status_message(&$variables, $clear = false)
 {
+    global $user;
+    $roles = array_intersect_key(user_roles(), $user->roles);
+    if (path_is_admin(current_path()) && in_array('administrator',$roles)){
+        //ensure the styles are admin
+//        $sys_module = drupal_get_path('module', 'system');
+//        drupal_add_css($sys_module . '/system.messages.css', array('type' => 'file', 'weight' => CSS_SYSTEM , 'preprocess' => FALSE));
 
-//    bootstrap_status_messages()
-    if (path_is_admin(current_path())){
         //for admin themes keep the original layout
         $output = theme_status_messages($variables);
     }else{
@@ -336,7 +340,10 @@ function designssquare_lib_template_api_breadcrumb(&$variables)
     $output = '';
     $breadcrumbs = _breadcrumb_tapi();
 
-    if (path_is_admin(current_path())) {
+    global $user;
+    $roles = array_intersect_key(user_roles(), $user->roles);
+    if (path_is_admin(current_path()) && in_array('administrator',$roles)){
+//    if (path_is_admin(current_path())) {
         //for admin don't template
         if (!empty($breadcrumbs)) {
             // Provide a navigational heading to give context for breadcrumb links to
@@ -614,6 +621,7 @@ function designssquare_lib_template_api_theme_registry_alter(&$theme_registry)
 //        $theme_registry['comment_form']['function'] = 'template_api_comment';
 //    }
 
+
     if (is_tapi_enabled('main-menu') || is_tapi_enabled('user-menu') || is_tapi_enabled('bottom-menu')) { //only enable if the template is present
         //main menu
         $theme_registry['menu_tree']['function'] = 'designssquare_lib_template_api_menu_tree';
@@ -658,8 +666,13 @@ function get_ds_template_path($module_name, $template_name)
 //reusing boostrap_status_messages() formating
 function ds_bootstrap_status_messages($variables, $clear = False)
 {
+    global $user;
+    $roles = array_intersect_key(user_roles(), $user->roles);
+    if (path_is_admin(current_path()) && in_array('administrator',$roles)){
+        //ensure the styles are admin
+//        $sys_module = drupal_get_path('module', 'system');
+//        drupal_add_css($sys_module . '/system.messages.css', array('type' => 'file', 'weight' => CSS_SYSTEM , 'preprocess' => FALSE));
 
-    if (path_is_admin(current_path())){
         //for admin themes keep the original layout
         $variables = array('display' => null);
         $output = theme_status_messages($variables);
