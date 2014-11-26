@@ -196,9 +196,19 @@ function _page_tapi($vars)
 
     //for user login set title
     global $user;
-    if (empty($page_tapi['title']) && preg_match('/user/', $_GET['q']) && !$user->uid) {
-        //authenticated user){
+    if (empty($page_tapi['title']) && preg_match('/user\/password/', $_GET['q']) && !$user->uid) {
+        $page_tapi['title'] = t('Request New Password');
+    }elseif(empty($page_tapi['title']) && preg_match('/user\/register/', $_GET['q']) && !$user->uid){
+        $page_tapi['title'] = t('Create New Account');
+    }elseif(empty($page_tapi['title']) && preg_match('/user/', $_GET['q']) && !$user->uid){
+        $page_tapi['title'] = t('Log In');
+    }elseif(empty($page_tapi['title']) && preg_match('/user/', $_GET['q']) && $user->uid){
         $page_tapi['title'] = t('User Account');
+    }
+
+    /******SEARCH******/
+    if(arg(0) == 'search'){
+        $page_tapi['title'] = t('Search Results');
     }
 
     drupal_alter('page_tapi', $page_tapi);
@@ -248,6 +258,10 @@ function _header_tapi()
     $head_tapi['site_name'] = $head_tapi['site']['name'];
     $head_tapi['home_url'] = $head_tapi['site']['front_url'];
     $head_tapi['logo_path'] = $head_tapi['logo']['path'];
+
+    /*******conventions******/
+    $head_tapi['main-menu'] = ds_build_menu('main-menu');
+    $head_tapi['user-menu'] = ds_build_menu('user-menu');
 
     drupal_alter('header_tapi', $head_tapi);
     return $head_tapi;
@@ -644,3 +658,4 @@ function _user_actions()
         ),
     );
 }
+

@@ -7,7 +7,7 @@ DesignsSquare.com Template API template file - user-menu.tpl.php with the follow
                 $menu_tapi['links'][N]['link_output']::[RENDERABLE ARRAY](the link of the menu to render via drupal_render)
 -->
 <ul class="dropdown-menu">
-        <?php foreach($menu_tapi as $link): ?>
+        <?php foreach($menu_tapi['links'] as $link): ?>
         <?php print drupal_render($link['link_output']);?>
     <?php endforeach;?>
 </ul>
