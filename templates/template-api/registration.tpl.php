@@ -7,6 +7,16 @@ DesignsSquare.com Template API template file - registration.tpl.php with the fol
                 $registration_tapi['email_name']::[STRING](name attribute for input field of email) <br>
                 $registration_tapi['user_name']::[STRING](name attribute for input field of username) <br>
                 $registration_tapi['hidden_build_id']::[STRING](hidden field necessary for registration form)
+                //action links<br>
+                $registration_tapi['actions']::[ARRAY](list of actions for users )<br>
+                $registration_tapi['actions']['register']['path']::[STRING](url to the page with registration form)<br>
+                $registration_tapi['actions']['register']['text']::[STRING](text for the link)<br>
+                $registration_tapi['actions']['login']['path']::[STRING](url to the page with user login form)<br>
+                $registration_tapi['actions']['login']['text']::[STRING](text for the link)<br>
+                $registration_tapi['actions']['password-reset']['path']::[STRING](url to the page with form to reset password)<br>
+                $registration_tapi['actions']['password-reset']['text']::[STRING](text for the link)<br>
+2. $vars_tapi
+    - Drupal $variables passed on(regions in $vars_tapi[page][region-id])
 -->
 
 <form class="register-form" id="<?php print $registration_tapi['form_id'];?>" action="<?php print $registration_tapi['form_action'];?>" method="post">

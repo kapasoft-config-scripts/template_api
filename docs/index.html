@@ -672,7 +672,7 @@
         <tr>
             <td>Main Menu Need to Be Available in Header</td>
             <td>Main menu is automatically made available( &lt;?php print $header_tapi['main-menu']?&gt; or &lt;?php print $vars['header']['main-menu']?&gt; ) in header template and HTML scope</td>
-            <td>The same requirements
+            <td>
                 <ol>
                     <li>template file - main-menu.tpl.php needs to be present in templates/template-api dir</li>
                     <li>template file - main-menu-link.tpl.php needs to be present in templates/template-api dir</li>
@@ -685,7 +685,7 @@
         <tr>
             <td>User Menu Need to Be Available in Header</td>
             <td>User menu is automatically made available( &lt;?php print render($header_tapi['user-menu'])?&gt; or &lt;?php print render($vars['header']['user-menu'])?&gt; ) in header template and HTML scope</td>
-            <td>The same requirements
+            <td>
                 <ol>
                     <li>template file - user-menu.tpl.php needs to be present in templates/template-api dir</li>
                     <li>template file - user-menu-link.tpl.php needs to be present in templates/template-api dir</li>
@@ -908,18 +908,22 @@
                 $contact_tapi['name_name']::[STRING](the name attribute for input field of Name)<br>
                 $contact_tapi['name_label']::[STRING](the label of name input field)<br>
                 $contact_tapi['name_type']::[STRING](the type of name input field)<br>
+                $contact_tapi['name_value']::[STRING](the name of current user or value as configured in External Configs for anonymous user. See <a href="#!/configuration">External Configs</a>)<br>
                 //SUBJECT INPUT<br>
                 $contact_tapi['subject_name']::[STRING](the name attribute for input field of Subject)<br>
                 $contact_tapi['subject_value']::[STRING](the value of subject input field)<br>
                 $contact_tapi['subject_label']::[STRING](the label of subject input field)<br>
                 $contact_tapi['subject_type']::[STRING](the type of subject input field)<br>
+                $contact_tapi['subject_value']::[STRING](the default subject line as configured in External Configs. See <a href="#!/configuration">External Configs</a>)<br>
                 //EMAIL INPUT<br>
                 $contact_tapi['email_name']::[STRING](the name attribute for input field of Email)<br>
                 $contact_tapi['email_label']::[STRING](the label of email input field)<br>
                 $contact_tapi['email_type']::[STRING](the type of email input field)<br>
+                $contact_tapi['email_value']::[STRING](the email of current user or value as configured in External Configs for anonymous users. See <a href="#!/configuration">External Configs</a>)<br>
                 //MESSAGE INPUT<br>
                 $contact_tapi['message_name']::[STRING](the name attribute for input field of Message)<br>
                 $contact_tapi['message_label']::[STRING](the label of message input field)<br>
+                $contact_tapi['message_value']::[STRING](the message default value as configured in External Configs. See <a href="#!/configuration">External Configs</a>)<br>
                 //SUBMIT INPUT<br>
                 $contact_tapi['submit_name']::[STRING](the name attribute for submit button)<br>
                 $contact_tapi['submit_id']::[STRING](the id for submit button)<br>
@@ -1035,8 +1039,7 @@
                 $user_tapi['email']::[STRING]<br>
                 $user_tapi['link']['path']::[STRING](the path to user profile if registered user or login page for
                 anonymous visitor )<br>
-                $user_tapi['link']['text']::[STRING](the name of User or anonymous name like ' Mate' as configured in <a
-                        href="#!/configuration">external configurations</a>)<br>
+                $user_tapi['link']['text']::[STRING](the name of User or anonymous name like ' Mate' as configured in <a href="#!/configuration">External Configurations</a>)<br>
                 $user_tapi['login-link']['path']::[STRING](the path to login/logout )<br>
                 $user_tapi['login-link']['text']::[STRING](the text for link to login/logout)<br>
                 $user_tapi['img']['url']::[STRING]<br>
@@ -1101,8 +1104,8 @@
                 $registration_tapi['hidden_build_id']::[STRING](hidden field necessary for registration
                 form)<br>
                 $registration_tapi['hidden_form_id']::[STRING](hidden field necessary for registration form)<br>
-                //actions links
-                $registration_tapi['actions']::[ARRAY](list of actions for users )
+                //actions links<br>
+                $registration_tapi['actions']::[ARRAY](list of actions for users )<br>
                 $registration_tapi['actions']['register']['path']::[STRING](url to the page with registration form)<br>
                 $registration_tapi['actions']['register']['text']::[STRING](text for the link)<br>
                 $registration_tapi['actions']['login']['path']::[STRING](url to the page with user login form)<br>
@@ -1134,8 +1137,8 @@
                 $login_tapi['pass_name']::[STRING](name attribute for input field of password)<br>
                 $login_tapi['hidden_build_id']::[STRING](hidden field necessary for login form)<br>
                 $login_tapi['hidden_form_id']::[STRING](hidden field necessary for login form)<br>
-                //actions links
-                $login_tapi['actions']::[ARRAY](list of actions for users )
+                //action links<br>
+                $login_tapi['actions']::[ARRAY](list of actions for users )<br>
                 $login_tapi['actions']['register']['path']::[STRING](url to the page with registration form)<br>
                 $login_tapi['actions']['register']['text']::[STRING](text for the link)<br>
                 $login_tapi['actions']['login']['path']::[STRING](url to the page with user login form)<br>
@@ -1167,8 +1170,8 @@
                 $password_reset_tapi['email_name']::[STRING](name attribute for input field of email) <br>
                 $password_reset_tapi['hidden_build_id']::[STRING](hidden field necessary for password reset form)<br>
                 $password_reset_tapi['hidden_form_id']::[STRING](hidden field necessary for password reset form)<br>
-                //actions links
-                $password_reset_tapi['actions']::[ARRAY](list of actions for users )
+                //actions links<br>
+                $password_reset_tapi['actions']::[ARRAY](list of actions for users )<br>
                 $password_reset_tapi['actions']['register']::[ARRAY](action for registration)<br>
                 $password_reset_tapi['actions']['register']['path']::[STRING](url to the page with registration
                 form)<br>
@@ -1569,7 +1572,7 @@
         </tr>
         <tr>
             <td>ds_default_user_email</td>
-            <td>fan@designssquare.org</td>
+            <td>fan@designssquare.com</td>
             <td>specifies the default email address for the anonymouse users or registered user that haven't specified
                 their email address
             </td>
@@ -1615,6 +1618,26 @@
             <td>Empty</td>
             <td>heading text for info message</td>
         </tr>
+    <tr>
+        <td>ds_contact_anonymous_name</td>
+        <td>Your  Name</td>
+        <td>user name used in contact form for anonymous user</td>
+    </tr>
+    <tr>
+        <td>ds_contact_anonymous_email</td>
+        <td>fan@DesignsSquare.com</td>
+        <td>user email used in contact form for anonymous user</td>
+    </tr>
+    <tr>
+        <td>ds_contact_subject_value</td>
+        <td>Inquiring</td>
+        <td>subject line in the contact form</td>
+    </tr>
+    <tr>
+        <td>ds_contact_message_value</td>
+        <td>Your Message</td>
+        <td>The default message value in the contact form</td>
+    </tr>
     </table>
     </p>
 </section>
@@ -1659,7 +1682,13 @@
     <ul>
         <li>add auto trigger for Registration, Login and Password Reset forms</li>
         <li>added status message template</li>
-        <li>added exnteral configuration from theme info file</li>
+        <li>added external configuration from theme info file</li>
+    </ul>
+    <h5>Release 0.1.5</h5>
+    <ul>
+        <li>fix contact form to override Drupal default site contact form with TAPI contact form if enabled </li>
+        <li>enhance contact form with user name, email values of current user and added configurable message, subject value</li>
+        <li>added external configuration for user name, email, subject and message</li>
     </ul>
 </section>
 </div>

@@ -1,6 +1,6 @@
 <!--
-Designssquare.com Template API template file - status-message.tpl.php with following TAPI:
-1. $message_status_tapi
+DesignsSquare.com Template API template file - status-message.tpl.php with following TAPI:
+1. $status_message_tapi
    - array of variable for messages - warning, error, status and info with following API:
                 $status_message_tapi['status']['enabled']::[BOOLEAN] (true if there is any message of this kind, otherwise false)<br>
                 $status_message_tapi['status']['heading']::[STRING] (Heading for the messsages of type Status)<br>
@@ -30,12 +30,12 @@ Designssquare.com Template API template file - status-message.tpl.php with follo
 
 
 <!--WARNING Messages-->
-<?php if($message_status_tapi['warning']['enabled']) : ?>
+<?php if($status_message_tapi['warning']['enabled']) : ?>
 <div class="alert alert-warning alert-dismissible" role="alert">
     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-    <strong><?php print $message_status_tapi['warning']['heading']?></strong>
-    <?php foreach($message_status_tapi['warning']['messages'] as $key => $message): ?>
-        <?php if($key == 0 && $message_status_tapi['warning']['size'] == 1 ) :?>
+    <strong><?php print $status_message_tapi['warning']['heading']?></strong>
+    <?php foreach($status_message_tapi['warning']['messages'] as $key => $message): ?>
+        <?php if($key == 0 && $status_message_tapi['warning']['size'] == 1 ) :?>
             <div><?php print $message;?></div>
         <?php else : ?>
         <li><?php print $message;?></li>
@@ -45,12 +45,12 @@ Designssquare.com Template API template file - status-message.tpl.php with follo
 <?php endif ?>
 
 <!--ERROR Messages-->
-<?php if($message_status_tapi['error']['enabled']) : ?>
+<?php if($status_message_tapi['error']['enabled']) : ?>
     <div class="alert alert-danger alert-dismissible" role="alert">
         <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <strong><?php print $message_status_tapi['error']['heading']?></strong>
-        <?php foreach($message_status_tapi['error']['messages'] as $key => $message): ?>
-            <?php if($key == 0 && $message_status_tapi['error']['size'] == 1 ) :?>
+        <strong><?php print $status_message_tapi['error']['heading']?></strong>
+        <?php foreach($status_message_tapi['error']['messages'] as $key => $message): ?>
+            <?php if($key == 0 && $status_message_tapi['error']['size'] == 1 ) :?>
                 <div><?php print $message;?></div>
             <?php else : ?>
                 <li><?php print $message;?></li>
@@ -60,12 +60,12 @@ Designssquare.com Template API template file - status-message.tpl.php with follo
 <?php endif ?>
 
 <!--STATUS Messages-->
-<?php if($message_status_tapi['status']['enabled']) : ?>
+<?php if($status_message_tapi['status']['enabled']) : ?>
     <div class="alert alert-success alert-dismissible" role="alert">
         <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <strong><?php print $message_status_tapi['status']['heading']?></strong>
-        <?php foreach($message_status_tapi['status']['messages'] as $key => $message): ?>
-            <?php if($key == 0 && $message_status_tapi['status']['size'] == 1 ) :?>
+        <strong><?php print $status_message_tapi['status']['heading']?></strong>
+        <?php foreach($status_message_tapi['status']['messages'] as $key => $message): ?>
+            <?php if($key == 0 && $status_message_tapi['status']['size'] == 1 ) :?>
                 <div><?php print $message;?></div>
             <?php else : ?>
                 <li><?php print $message;?></li>
@@ -74,12 +74,13 @@ Designssquare.com Template API template file - status-message.tpl.php with follo
     </div>
 <?php endif ?>
 
-<?php if($message_status_tapi['info']['enabled']) : ?>
+<!--INFO Messages-->
+<?php if($status_message_tapi['info']['enabled']) : ?>
     <div class="alert alert-info alert-dismissible" role="alert">
         <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <strong><?php print $message_status_tapi['info']['heading']?></strong>
-        <?php foreach($message_status_tapi['info']['messages'] as $key => $message): ?>
-            <?php if($key == 0 && $message_status_tapi['info']['size'] == 1 ) :?>
+        <strong><?php print $status_message_tapi['info']['heading']?></strong>
+        <?php foreach($status_message_tapi['info']['messages'] as $key => $message): ?>
+            <?php if($key == 0 && $status_message_tapi['info']['size'] == 1 ) :?>
                 <div><?php print $message;?></div>
             <?php else : ?>
                 <li><?php print $message;?></li>

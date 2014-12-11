@@ -8,6 +8,14 @@ DesignsSquare.com Template API template file - login.tpl.php with following TAPI
                 $login_tapi['pass_name']::[STRING](name attribute for input field of password)<br>
                 $login_tapi['hidden_build_id']::[STRING](hidden field necessary for login form)<br>
                 $login_tapi['hidden_form_id']::[STRING](hidden field necessary for login form)
+                //action links<br>
+                $login_tapi['actions']::[ARRAY](list of actions for users )<br>
+                $login_tapi['actions']['register']['path']::[STRING](url to the page with registration form)<br>
+                $login_tapi['actions']['register']['text']::[STRING](text for the link)<br>
+                $login_tapi['actions']['login']['path']::[STRING](url to the page with user login form)<br>
+                $login_tapi['actions']['login']['text']::[STRING](text for the link)<br>
+                $login_tapi['actions']['password-reset']['path']::[STRING](url to the page with form to reset password)<br>
+                $login_tapi['actions']['password-reset']['text']::[STRING](text for the link)<br>
 2. $vars_tapi
     - Drupal $variables passed on(regions in $vars_tapi[page][region-id])
 -->

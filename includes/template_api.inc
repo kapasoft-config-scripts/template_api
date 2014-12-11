@@ -260,8 +260,16 @@ function _header_tapi()
     $head_tapi['logo_path'] = $head_tapi['logo']['path'];
 
     /*******conventions******/
-    $head_tapi['main-menu'] = ds_build_menu('main-menu');
-    $head_tapi['user-menu'] = ds_build_menu('user-menu');
+    $main_menu_name = 'main-menu';
+//    $main_menu_links = ds_build_menu($main_menu_name);
+//    $head_tapi['main-menu'] = _menu_tapi($main_menu_links, 0, $main_menu_name);
+    $head_tapi['main-menu'] = ds_build_menu($main_menu_name);
+
+    $user_menu_name = 'user-menu';
+//    $user_menu_links = ds_build_menu($user_menu_name);
+//    $head_tapi['user-menu'] = _menu_tapi($user_menu_links, 0, $user_menu_name);
+    $head_tapi['user-menu'] = ds_build_menu($user_menu_name);
+
 
     drupal_alter('header_tapi', $head_tapi);
     return $head_tapi;
@@ -295,6 +303,7 @@ function _search_tapi()
 //@ToDo implement category support
 function _contact_tapi($category = 'contact')
 {
+    global $user;
     $contact_tapi = array();
     require_once drupal_get_path('module', 'contact') . '/contact.pages.inc';
     $contact_form_array = drupal_get_form('contact_site_form');
@@ -306,20 +315,37 @@ function _contact_tapi($category = 'contact')
     $contact_tapi['name_name'] = $contact_form_array['name']['#name'];
     $contact_tapi['name_label'] = t('Your Name:');
     $contact_tapi['name_type'] = 'text';
+    if(isset($user->name)){
+        $name_value = $user->name;
+    }else{
+        $ext_name_value = theme_get_setting('ds_contact_anonymous_name');
+        $name_value = (isset($ext_name_value)) ? $ext_name_value : t('Your  Name');
+    }
+    $contact_tapi['name_value'] = $name_value;
     //subject input field
     $contact_tapi['subject_name'] = $contact_form_array['subject']['#name'];
     $contact_tapi['subject_value'] = 'From ' . $_SERVER['HTTP_HOST'];
     $contact_tapi['subject_label'] = t('Subject:');
     $contact_tapi['subject_type'] = 'text';
+    $contact_tapi['subject_value'] = ($subject_value = theme_get_setting('ds_contact_subject_value')) ? $subject_value : t('Inquiring');
 
     //email input field
     $contact_tapi['email_name'] = $contact_form_array['mail']['#name'];
     $contact_tapi['email_label'] = t('Your Email:');
     $contact_tapi['email_type'] = 'email';
+    if(isset($user->mail)){
+        $email_value = $user->mail;
+    }else{
+        $ext_email_value = theme_get_setting('ds_contact_anonymous_email');
+        $email_value = (isset($ext_email_value)) ? $ext_email_value : t('fan@DesignsSquare.com');
+    }
+    $contact_tapi['email_value'] = $email_value;
 
     //message input field
     $contact_tapi['message_name'] = $contact_form_array['message']['#name'];
     $contact_tapi['message_label'] = t('Your Message');
+    $contact_tapi['message_value'] = ($message_value = theme_get_setting('ds_contact_message_value')) ? $message_value : t('Your Message');
+
 
     //submit input field
     $contact_tapi['submit_name'] = 'op';
@@ -653,7 +679,7 @@ function _user_actions()
             'text' => ($log_in_text = (theme_get_setting('ds_user_login_text'))) ? $log_in_text : 'Log in',
         ),
         'password-reset' => array(
-            'path' => base_path() . 'user/register',
+            'path' => base_path() . 'user/password',
             'text' => ($pass_reset_text = theme_get_setting('ds_user_pass_reset_text')) ? $pass_reset_text : 'reset your password',
         ),
     );

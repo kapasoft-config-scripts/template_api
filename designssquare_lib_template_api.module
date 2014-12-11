@@ -55,10 +55,12 @@ function designssquare_lib_template_api_preprocess_page(&$vars)
             '#theme' => 'template_api_contact_form',
             '#contact_tapi' => _contact_tapi('contact'),
         );
+    }elseif(is_tapi_enabled('contact-block')){
         $vars['contact_block_form'] = array(
             '#theme' => 'template_api_contact_block_form',
             '#contact_tapi' => _contact_tapi('contact_block'),
         );
+    }elseif(is_tapi_enabled('contact-inquiry')){
         $vars['contact_inquiry_form'] = array(
             '#theme' => 'template_api_contact_inquiry_form',
             '#contact_tapi' => _contact_tapi('inquiry'),
@@ -217,7 +219,7 @@ function designssquare_lib_template_api_theme()
 }
 
 /***SEARCH****/
-/**Overriding theme_form function to get rid of form html
+/**Overriding theme_form function to get rid of form html or do the overrides of TAPI
  * @param $variables
  */
 function designssquare_lib_template_api_form($variables)
@@ -266,6 +268,13 @@ function designssquare_lib_template_api_form($variables)
             //to remove wrappers
             $output =  $element['#children'];
             break;
+        case 'contact_site_form':
+            //override default contact form
+            if (is_tapi_enabled('contact')) {
+                $output =  theme('template_api_contact_form', array('contact_tapi' => _contact_tapi('contact')));
+            }
+            break;
+
 //        default:
 //            $output = '<form' . drupal_attributes($element['#attributes']) . '><div>' . $element['#children'] . '</div></form>';
     }
@@ -459,8 +468,10 @@ function designssquare_lib_template_api_menu_tree(&$variables)
         watchdog('notice','Template API: menu not specified designssquare_lib_template_api_menu_tree()...defaults to main-menu',array(),WATCHDOG_CRITICAL);
         $menu_name = 'no-menu-defined';
     }
-    $menu_template = drupal_get_path('theme', variable_get('theme_default')) . '/templates/template-api/' . $menu_name . '.tpl.php';
-    $menu_link_template = drupal_get_path('theme', variable_get('theme_default')) . '/templates/template-api/' . $menu_name . '-link.tpl.php';
+    $menu_token = substr($menu_name,0,5);
+    $file_menu_name =  ($menu_token == 'menu-') ? substr($menu_name,5) : $menu_name ;
+    $menu_template = drupal_get_path('theme', variable_get('theme_default')) . '/templates/template-api/' . $file_menu_name . '.tpl.php';
+    $menu_link_template = drupal_get_path('theme', variable_get('theme_default')) . '/templates/template-api/' . $file_menu_name . '-link.tpl.php';
 
     if (!file_exists($menu_template) || !file_exists($menu_link_template)) {
         //menu tapi isn't enabled...use Drupal's default
@@ -477,10 +488,10 @@ function designssquare_lib_template_api_menu_tree(&$variables)
         $tree = menu_tree_all_data($menu_name, NULL);
         $depth = 0;
         //rebuilds menu tree with link_output,depth,active etc present
-        $menu_name_final = str_replace('-', '_', $menu_name);
+        $menu_name_final = str_replace('-', '_', $file_menu_name);
         rebuild_menu_tree($tree, $menu_name_final, $depth, $active_trail_list);
 
-        $menu_tapi = _menu_tapi($tree, $depth);
+        $menu_tapi = _menu_tapi($tree, $depth, $file_menu_name);
         $output = theme('template_api_' . $menu_name_final, array(
             'menu_tapi' => $menu_tapi,
         ));
@@ -759,6 +770,12 @@ function is_tapi_enabled($element)
             break;
         case 'contact':
             $template_file = '/templates/template-api/contact.tpl.php';
+            break;
+        case 'contact-block':
+            $template_file = '/templates/template-api/contact-block.tpl.php';
+            break;
+        case 'contact-inquiry':
+            $template_file = '/templates/template-api/contact-inquiry.tpl.php';
             break;
         case 'status-message':
             $template_file = '/templates/template-api/status-message.tpl.php';
