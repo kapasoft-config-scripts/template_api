@@ -45,6 +45,8 @@ function designssquare_lib_template_api_preprocess_html(&$vars)
 
 function designssquare_lib_template_api_preprocess_page(&$vars)
 {
+    $node = (isset($vars['node'])) ? $vars['node'] : NULL;
+
     /***PAGE TAPI****/
     $vars['page_tapi'] = _page_tapi($vars);
 
@@ -74,6 +76,74 @@ function designssquare_lib_template_api_preprocess_page(&$vars)
         $vars['user_tapi']['is_authenticated'] = true;
     } else {
         $vars['user_tapi']['is_authenticated'] = false;
+    }
+
+    /*********NO-WRAP******************/
+
+        if (isset($node)) {
+            $type = $node->type;
+            switch ($type) {
+                case 'content':
+                    if(is_no_wrap('page_'.$type)){
+                        $vars['theme_hook_suggestions'][] = 'region__no_wrap_ds';
+                    }
+                    break;
+            }
+        }
+}
+
+function designssquare_lib_template_api_preprocess_block(&$vars){
+    if(is_no_wrap('block')){
+        $vars['theme_hook_suggestions'][] = 'block__no_wrap_ds';
+    }
+}
+
+//function designssquare_lib_template_api_preprocess_node(&$vars, $hook)
+//{
+//    switch ($vars['type']) {
+//        case 'page':
+////            $vars['theme_hook_suggestions'] = 'node__no_wrap_ds';
+//            break;
+//    }
+//}
+
+function designssquare_lib_template_api_preprocess_comment_wrapper(&$vars)
+{
+    if(is_no_wrap('comment')){
+        $vars['theme_hook_suggestions'][] = 'comment__no_wrap_ds';
+    }
+}
+
+
+function designssquare_lib_template_api_preprocess_field(&$vars, $hook)
+{
+    switch ($vars['element']['#field_name']) {
+        case 'body':
+            if (is_no_wrap('body')) {
+                $vars['theme_hook_suggestions'][] = 'field__no_wrap_ds';
+            }
+            break;
+    }
+}
+
+function designssquare_lib_template_api_preprocess_region(&$vars, $hook)
+{
+    switch ($vars['region']) {
+        case 'sidebar-second':
+            if (is_no_wrap('sidebar-second')) {
+                $vars['theme_hook_suggestions'][] = 'region__no_wrap_ds';
+            }
+            break;
+        case 'sidebar-first':
+            if (is_no_wrap('sidebar-first')) {
+                $vars['theme_hook_suggestions'][] = 'region__no_wrap_ds';
+            }
+            break;
+        case 'content':
+            if (is_no_wrap('region_content')) {
+                $vars['theme_hook_suggestions'][] = 'region__no_wrap_ds';
+            }
+            break;
     }
 }
 
@@ -191,6 +261,20 @@ function designssquare_lib_template_api_theme()
             ),
             'path' => get_ds_template_path('designssquare_lib_template_api', 'comment'),
         ),
+        'template_api_comment_master' => array(
+            'template' => 'comment-master',
+            'variables' => array(
+                  'content' => NULL,
+            ),
+            'path' => get_ds_template_path('designssquare_lib_template_api', 'comment-master'),
+        ),
+        'template_api_comment_form' => array(
+            'template' => 'comment-form',
+            'variables' => array(
+                'comment_form_tapi' => NULL,
+            ),
+            'path' => get_ds_template_path('designssquare_lib_template_api', 'comment-form'),
+        ),
         'template_api_registration_form' => array(
             'template' => 'registration',
             'variables' => array(
@@ -241,7 +325,8 @@ function designssquare_lib_template_api_form($variables)
 
     $output = '<form' . drupal_attributes($element['#attributes']) . '><div>' . $element['#children'] . '</div></form>';
 
-    switch ($variables['element']['#form_id']) {
+    $form_id = $variables['element']['#form_id'];
+    switch ($form_id) {
         case 'user_login':
             //override user_login form
             if (is_tapi_enabled('login')) {
@@ -274,6 +359,14 @@ function designssquare_lib_template_api_form($variables)
                 $output =  theme('template_api_contact_form', array('contact_tapi' => _contact_tapi('contact')));
             }
             break;
+        case 'comment_node_blog_form':
+        case 'comment_node_page_form':
+            //override default contact form
+            if (is_tapi_enabled('comment-form')) {
+                $comment = (isset($element['#entity'])) ? $element['#entity'] : NULL;
+                $output =  theme('template_api_comment_form', array('comment_form_tapi' => _comment_form_tapi($form_id, $comment)));
+            }
+            break;
 
 //        default:
 //            $output = '<form' . drupal_attributes($element['#attributes']) . '><div>' . $element['#children'] . '</div></form>';
@@ -304,19 +397,50 @@ function designssquare_lib_template_api_status_message(&$variables, $clear = fal
         //for admin themes keep the original layout
         $output = theme_status_messages($variables);
     } else {
-//        if(){
             $status_message_tapi = _status_message_tapi($clear);
             $output = theme('template_api_status_message', array(
                 'status_message_tapi' => $status_message_tapi,
             ));
-//        }else{
-//            $output = theme('status_messages');
-//        }
-
     }
 
     return $output;
 }
+
+/*****COMMENT******/
+//single comment template
+function template_api_comment(&$variables){
+    //@ToDo get comment
+    $comment = $variables['elements']['#comment'];
+    unset($variables['elements']['#prefix']);
+    $comment_tapi = _comment_tapi($comment);
+    $output = theme('template_api_comment', array(
+        'comment_tapi' => $comment_tapi,
+    ));
+    return $output;
+}
+
+//layout for the parent of comments and comment form
+function template_api_comment_master(&$variables){
+    $vars = array_shift($variables);
+
+//    $all_comments = array();
+//    //remove prefixes and builds comment list
+//    $comment_keys = array_filter(array_keys($vars['comments']), 'is_numeric');
+//    foreach($comment_keys as $key => $comment_id){
+//        unset($vars['comments'][$comment_id]['#prefix']);
+//        $all_comments[] = $vars['comments'][$comment_id];
+//    }
+//
+//    //comments title
+//    $vars['comments_title'] =
+//
+//    $vars['comments'] = build_comment_tree($all_comments);
+    $output = theme('template_api_comment_master', array(
+        'comment_master_tapi' => _comment_master_tapi($vars),
+    ));
+    return $output;
+}
+
 
 /*****BREADCRUMBS*****/
 /*overrides theme_breadcrumb*/
@@ -610,12 +734,27 @@ function designssquare_lib_template_api_theme_registry_alter(&$theme_registry)
     }
 
 
-    //@ToDo - figure out what function to override for comments and test it for comments
-    //comment form
-//    if (file_exists($path_to_theme . '/templates/template-api/comment.tpl.php')) { //only enable if the template is present
-//        //override comment form
-//        $theme_registry['comment_form']['function'] = 'template_api_comment';
-//    }
+    //comment
+    if (is_tapi_enabled('comment')) { //only enable if the template is present
+        //override comment
+        $theme_registry['comment']['function'] = 'template_api_comment';
+//        unset($theme_registry['comment']['preprocess functions']);
+
+//        $theme_registry['comment__node_blog']['function'] = 'template_api_comment';
+
+    }
+
+    if (is_tapi_enabled('comment-master')) { //only enable if the template is present
+        $theme_registry['comment_wrapper']['function'] = 'template_api_comment_master';
+//        unset($theme_registry['comment_wrapper']['preprocess functions']);
+        $theme_registry['comment__no_wrap_ds']['function'] = 'template_api_comment_master';
+        $theme_registry['comment__no_wrap']['function'] = 'template_api_comment_master';
+        $theme_registry['comment_wrapper__node_blog']['function'] = 'template_api_comment_master';
+        $theme_registry['comment_wrapper__node_blog']['render element'] = "element";
+        $theme_registry['comment_wrapper__node_blog']['theme path'] = "";
+
+//        unset($theme_registry['comment_wrapper__node_blog']['preprocess functions']);
+    }
 
 
     if (is_tapi_enabled('main-menu') || is_tapi_enabled('user-menu') || is_tapi_enabled('bottom-menu')) { //only enable if the template is present
@@ -753,6 +892,12 @@ function is_tapi_enabled($element)
         case 'comment':
             $template_file = '/templates/template-api/comment.tpl.php';
             break;
+        case 'comment-master':
+            $template_file = '/templates/template-api/comment-master.tpl.php';
+            break;
+        case 'comment-form':
+            $template_file = '/templates/template-api/comment-form.tpl.php';
+            break;
         case 'main-menu':
             $template_file = '/templates/template-api/main-menu.tpl.php';
             break;
@@ -789,10 +934,92 @@ function is_tapi_enabled($element)
 }
 
 
+/**
+ * lookup to see if no wrap template is enable for particular compoenent
+ *      @$component
+ *      -name of the component listed as following
+ *          #content
+ *          #comment
+ *          #block
+ * @return
+ *      true if no wrap is enabled or false if no wrap is disabled
+ */
+function is_no_wrap($component)
+{
+    $status = true;
+    switch ($component) {
+        case 'comment':
+            $nowrap_status = theme_get_setting('ds_no_wrap_comment');
+            $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : true;
+            break;
+        case 'page_content':
+            $nowrap_status = theme_get_setting('ds_no_wrap_page_content');
+            $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : true;
+            break;
+        case 'region_content':
+            $nowrap_status = theme_get_setting('ds_no_wrap_region_content');
+            $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : true;
+            break;
+        case 'sidebar-first':
+            $nowrap_status = theme_get_setting('ds_no_wrap_sidebar_first');
+            $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : true;
+            break;
+        case 'sidebar-second':
+            $nowrap_status = theme_get_setting('ds_no_wrap_sidebar_second');
+            $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : true;
+            break;
+        case 'block':
+            $nowrap_status = theme_get_setting('ds_no_wrap_block');
+            $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : false;
+            break;
+        case 'body':
+            $nowrap_status = theme_get_setting('ds_no_wrap_field_body');
+            $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : true;
+            break;
+    }
 
-//alter Header TAPI to include main menu
-//function bazar_header_tapi_alter(&$header_tapi){
-//    $menu_tree = menu_tree(variable_get('menu_main_links_source', 'main-menu'));
-//    $header_tapi['primary_nav'] = theme('menu_tree', array('element' => $menu_tree));
-//}
+    return $status;
+}
 
+/**Recursively builds a tree of comments organized parent child relationship
+ * @param $comments
+ *      list of all comments organized by weight with children always following parent
+ * @param int $iterator
+ *      pointer to the current comment being processed
+ *
+ * @return array
+ *          tree of comments organized into a tree
+ */
+function build_comment_tree($comments, &$iterator = 0)
+{
+    $sibling_comments = array();
+//    for($iterator; $iterator < count($comments); $iterator++){
+    while($iterator < count($comments)){
+        $current_comment = $comments[$iterator]['#comment'];
+        $next_comment = isset($comments[$iterator + 1]) ? $comments[$iterator + 1]['#comment'] : NULL;
+        $comment_tapi = _comment_tapi($current_comment);
+        $iterator++;//set up for next iteration
+
+
+        if(isset($next_comment) && $current_comment->depth < $next_comment->depth){
+//            $iterator++;//skip
+            $comment_tapi['children_comments'] = build_comment_tree($comments, $iterator);
+        }elseif(isset($next_comment) && $current_comment->depth > $next_comment->depth){
+            //break out...reach it bottom and the next sibling is parent not sibling
+//            $iterator++;//skip
+            $sibling_comments[] =  array(
+                '#theme' => 'template_api_comment',
+                '#comment_tapi' => $comment_tapi,
+            );
+            break;
+        }else{
+            //continue because its sibling comment
+        }
+
+        $sibling_comments[] =  array(
+            '#theme' => 'template_api_comment',
+            '#comment_tapi' => $comment_tapi,
+        );
+    }
+    return $sibling_comments;
+}

@@ -1,5 +1,5 @@
-<!--
-DesignsSquare.com Template API template file - password-reset.tpl.php with following TAPI:
+<?php
+/*DesignsSquare.com Template API template file - password-reset.tpl.php with following TAPI:
 1. $password_reset_tapi
    - array of variables for registration form with the following API:
                 $password_reset_tapi['form_id']::[STRING](form id for password reset form)<br>
@@ -17,7 +17,8 @@ DesignsSquare.com Template API template file - password-reset.tpl.php with follo
                 $password_reset_tapi['actions']['password-reset']['text']::[STRING](text for the link)<br>
 2. $vars_tapi
     - Drupal $variables passed on(regions in $vars_tapi[page][region-id])
--->
+*/
+?>
 <form class="forget-form" id="<?php print $password_reset_tapi['form_id'];?>" action="<?php print $password_reset_tapi['form_action'];?>" method="post">
     <h3>Forget Password ?</h3>
     <p>

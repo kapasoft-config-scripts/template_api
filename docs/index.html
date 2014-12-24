@@ -134,6 +134,7 @@
         <li><a href="#templates">Templates</a></li>
         <li><a href="#triggers">Triggers</a></li>
         <li><a href="#conventions">Conventions</a></li>
+        <li><a href="#no_wraps">No Wraps</a></li>
         <li><a href="#header_tapi">Header TAPI</a></li>
         <li><a href="#footer_tapi">Footer TAPI</a></li>
         <li><a href="#breadcrumbs_tapi">Breadcrumbs TAPI</a></li>
@@ -151,7 +152,7 @@
         <li><a href="#theme_func">Theme Functions</a></li>
         <li><a href="#customize">Customize</a></li>
         <li><a href="#how-to">How To</a></li>
-        <li><a href="#configuration">External Configurations</a></li>
+        <li><a href="#configuration">Configurations</a></li>
         <li><a href="#troubleshoot">Troubleshooting</a></li>
         <li><a href="#backlog">Future Releases</a></li>
         <li><a href="#releases">Release History</a></li>
@@ -293,8 +294,14 @@
         </tr>
         <tr>
             <td>Comment TAPI</td>
-            <td>$comment_tapi (see details at <a href="#!/comment_tapi">'Comment TAPI'</a> section)</td>
-            <td>comment.tpl.php</td>
+            <td>$comment_tapi, $comment_master_tapi (see details at <a href="#!/comment_tapi">'Comment TAPI'</a> section)</td>
+            <td>comment.tpl.php, comment-master.tpl.php</td>
+            <td>all info for themeing comments</td>
+        </tr>
+        <tr>
+            <td>Comment Form TAPI</td>
+            <td>$comment_form_tapi (see details at <a href="#!/comment_tapi">'Comment TAPI'</a> section)</td>
+            <td>comment-form.tpl.php</td>
             <td>all info for themeing comment form</td>
         </tr>
         <tr>
@@ -360,6 +367,7 @@
         files. It's important to note that The Template
         API is not limited to only these scope. You can include any TAPI by calling its TAPI function(see the function
         name in each TAPI details section of your interest)</p>
+    <p>Use TAPI Hooks for altering any of TAPI. See section <a href="#!/customize">"Customize"</a> for more details</p>
 </section>
 <section id="templates">
     <h3>About Templates</h3>
@@ -398,11 +406,25 @@
             </td>
         </tr>
         <tr>
-            <td>Comment Form</td>
-            <td>comment.tpl.php</td>
+            <td>Comments</td>
+            <td>comment.tpl.php, comment-master.tpl.php</td>
             <td>
                 <ul>
-                    <li>$comment_tapi:[ARRAY] info for the Comment form(see more details <a href="#!/comment_tapi">Comment
+                    <li>$comment_tapi:[ARRAY] info of a particular Comment(see more details <a href="#!/comment_tapi">Comment
+                        TAPI</a>)
+                    </li>
+                    <li>$comment_master_tapi:[ARRAY] master of comments holding refrence to all comments and the comment form(see more details <a href="#!/comment_tapi">Comment
+                        TAPI</a>)
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        <tr>
+            <td>Comment Form</td>
+            <td>comment-form.tpl.php</td>
+            <td>
+                <ul>
+                    <li>$comment_form_tapi:[ARRAY] info of Comment Form(see more details <a href="#!/comment_tapi">Comment
                         TAPI</a>)
                     </li>
                 </ul>
@@ -601,7 +623,7 @@
             <td>In the HTML scope(html.tpl.php), import as following:<br><code>&lt;?php print $footer ?&gt;</code></td>
         </tr>
         <tr>
-            <td>Breadcrumbs, Search, All Menus, Status Message, Login, Registration and Password Reset</td>
+            <td>Breadcrumbs, Search, All Menus, Status Message,Comments, Login, Registration and Password Reset</td>
             <td>
                 <ol>
                     <li>template file - ELEMENT.tpl.php needs to be present</li>
@@ -629,12 +651,10 @@
 
 </section>
 <section id="conventions">
-    <h3>@ToDo  Conventions</h3>
+    <h3>Conventions</h3>
     <hr>
     <p>After themeing for some time, it becomes apparent that there are some common patterns or common ways of doing
-        things. Based on these observation, the following conventions
-        have been implemented, so its available for everyone out of box that way saving time by avoiding to redo some
-        tasks:
+        things. Based on these observations, the following conventions have been implemented to save time for you:
     </p>
     <table>
         <thead>
@@ -705,7 +725,103 @@
                 see details at <a href="#!/page_tapi">PAGE TAPI</a>
             </td>
         </tr>
+        <tr>
+            <td>Breadcrumbs last element is the title of page</td>
+            <td>BREADCRUMBS TAPI(<code>$breadcrumbs_tapi</code>) is available on breadcrumbs.tpl.php template.</td>
+            <td>No special requirements
+            </td>
+            <td>To turn OFF/ON this convention in one of the following ways:
+                <ol>
+                    <li><h6>Via Configurations</h6> Set Theme settings configuration variable - bootstrap_breadcrumb_title to true or false. This is  also
+                    available if you have Bootstrap Theme, then it is in Bootstrap Theme Settings UI</li>
+                    <li><h6>Via Code</h6> Use hook_breadcrumbs_tapi_alter to remove last element in Breadcrumb TAPI. See section <a href="#!/customize">Customize</a> for details</li>
+                </ol>
+                see other details at <a href="!/breadcrumbs_tapi">BREADCRUMBS TAPI</a>
+            </td>
+        </tr>
+        <tr>
+            <td>Most of layout wraps added by Drupal need to be removed</td>
+            <td>Most of the Drupal wraps are removed</td>
+            <td>Copy all no wrap layouts from the /template/no-wraps-tpl into THEME/template dir
+                (to disable wraps removal for certain component, change settings in <a href="#!/configuration">configurations</a>)
+            </td>
+            <td>
+                see details at <a href="#!/no_wraps">No Wraps</a>
+            </td>
+        </tr>
     </table>
+</section>
+<section id="no_wraps">
+    <h3>No Wraps</h3>
+    <hr>
+    <p>By default, Drupal wraps components with additional html layouts. Most of these wraps if
+        not all often break design layout. The Template API module removes these wraps after
+    <ol>
+    <li>Copy the no-wrap layouts from /template/no-wraps-tpl to the THEME/templates directory</li>
+    <li>Don't make any change in Wrap configurations(see section - <a href="#!/configuration">Configurations</a> for more info)</li>
+    </ol>
+    </p>
+
+    <h5>No Wrap Summary</h5>
+    <table>
+        <thead>
+        <th>Component</th>
+        <th>Scope</th>
+        <th>Configuration</th>
+        <th>Default Value</th>
+        <th>Template File</th>
+        </thead>
+        <tr>
+            <td>Comment</td>
+            <td>hook_preprocess_comment_wrapper</td>
+            <td>ds_no_wrap_comment</td>
+            <td>ON</td>
+            <td>ds-comment--no-wrap.tpl.php</td>
+        </tr>
+        <tr>
+            <td>Body</td>
+            <td>hook__preprocess_field</td>
+            <td>ds_no_wrap_field_body</td>
+            <td>ON</td>
+            <td>ds-field--no-wrap.tpl.php</td>
+        </tr>
+        <tr>
+            <td>Block</td>
+            <td>hook__preprocess_block</td>
+            <td>ds_no_wrap_block</td>
+            <td>OFF</td>
+            <td>ds-block--no-wrap.tpl.php</td>
+        </tr>
+        <tr>
+            <td>Sidebar Second</td>
+            <td>hook__preprocess_region</td>
+            <td>ds_no_wrap_sidebar_second</td>
+            <td>ON</td>
+            <td>ds-region--no-wrap.tpl.php</td>
+        </tr>
+        <tr>
+            <td>Sidebar First</td>
+            <td>hook__preprocess_region</td>
+            <td>ds_no_wrap_sidebar_first</td>
+            <td>ON</td>
+            <td>ds-region--no-wrap.tpl.php</td>
+        </tr>
+        <tr>
+            <td>Region Content</td>
+            <td>hook__preprocess_region</td>
+            <td>ds_no_wrap_region_content</td>
+            <td>ON</td>
+            <td>ds-region--no-wrap.tpl.php</td>
+        </tr>
+        <tr>
+            <td>Page Content</td>
+            <td>hook__preprocess_page</td>
+            <td>ds_no_wrap_page_content</td>
+            <td>ON</td>
+            <td>ds-region--no-wrap.tpl.php</td>
+        </tr>
+    </table>
+<p>The configurations are located in Themes *.info file</p>
 </section>
 <section id="header_tapi">
     <h3>Header TAPI</h3>
@@ -908,22 +1024,21 @@
                 $contact_tapi['name_name']::[STRING](the name attribute for input field of Name)<br>
                 $contact_tapi['name_label']::[STRING](the label of name input field)<br>
                 $contact_tapi['name_type']::[STRING](the type of name input field)<br>
-                $contact_tapi['name_value']::[STRING](the name of current user or value as configured in External Configs for anonymous user. See <a href="#!/configuration">External Configs</a>)<br>
+                $contact_tapi['name_value']::[STRING](the name of current user or value as configured in Configurations for anonymous user. See <a href="#!/configuration">Configurations section</a>)<br>
                 //SUBJECT INPUT<br>
                 $contact_tapi['subject_name']::[STRING](the name attribute for input field of Subject)<br>
-                $contact_tapi['subject_value']::[STRING](the value of subject input field)<br>
                 $contact_tapi['subject_label']::[STRING](the label of subject input field)<br>
                 $contact_tapi['subject_type']::[STRING](the type of subject input field)<br>
-                $contact_tapi['subject_value']::[STRING](the default subject line as configured in External Configs. See <a href="#!/configuration">External Configs</a>)<br>
+                $contact_tapi['subject_value']::[STRING](the default subject line as configured in Configurations. See <a href="#!/configuration">Configurations section</a>)<br>
                 //EMAIL INPUT<br>
                 $contact_tapi['email_name']::[STRING](the name attribute for input field of Email)<br>
                 $contact_tapi['email_label']::[STRING](the label of email input field)<br>
                 $contact_tapi['email_type']::[STRING](the type of email input field)<br>
-                $contact_tapi['email_value']::[STRING](the email of current user or value as configured in External Configs for anonymous users. See <a href="#!/configuration">External Configs</a>)<br>
+                $contact_tapi['email_value']::[STRING](the email of current user or value as configured in Configurations for anonymous users. See <a href="#!/configuration">Configurations section</a>)<br>
                 //MESSAGE INPUT<br>
                 $contact_tapi['message_name']::[STRING](the name attribute for input field of Message)<br>
                 $contact_tapi['message_label']::[STRING](the label of message input field)<br>
-                $contact_tapi['message_value']::[STRING](the message default value as configured in External Configs. See <a href="#!/configuration">External Configs</a>)<br>
+                $contact_tapi['message_value']::[STRING](the message default value as configured in Configurations. See <a href="#!/configuration">Configurations section</a>)<br>
                 //SUBMIT INPUT<br>
                 $contact_tapi['submit_name']::[STRING](the name attribute for submit button)<br>
                 $contact_tapi['submit_id']::[STRING](the id for submit button)<br>
@@ -943,7 +1058,7 @@
     <hr>
     <h4>Comment Template</h4>
 
-    <p>There is one template file - comment.tpl.php that has Comment TAPI available by default descussed next</p>
+    <p>There is one template file - comment.tpl.php that has Comment TAPI available by default discussed next</p>
 
     <h4>Comment TAPI Description</h4>
 
@@ -961,15 +1076,14 @@
                 //AUTHOR INFO<br>
                 $comment_tapi['author']::[ARRAY](info about the comment author)<br>
                 $comment_tapi['author']['name']::[STRING](the name of the comment author)<br>
-                $comment_tapi['author']['gravatar_url']::[STRING](url to the avatar for comment author. If not
+                $comment_tapi['author']['avatar_url']::[STRING](url to the avatar for comment author. If not
                 specified, it defaults to '/sites/default/file/avatar.jpg)<br>
                 $comment_tapi['author']['profile_url']::[STRING](url to the profile of comment author)<br>
                 //COMMENT INFO<br>
                 $comment_tapi['comment']::[ARRAY](info about the comment itself)
                 $comment_tapi['comment']['subject']::[STRING](the subject of the comment)<br>
                 $comment_tapi['comment']['content']::[STRING](the content of the comment)<br>
-                $comment_tapi['comment']['date']::[STRING](the label of subject input field)<br>
-                $comment_tapi['subject_type']::[STRING](the date of comment submitted)<br>
+                $comment_tapi['comment']['date']::[STRING](the date of comment submitted)<br>
                 //COMMENT LINKS<br>
                 $comment_tapi['links']::[ARRAY](info of the action links for the comment)
                 $comment_tapi['links']['access']::[BOOLEAN](determines if action links should be displayd for the
@@ -980,8 +1094,31 @@
                 $comment_tapi['links']['reply_text']::[STRING](text of the REPLAY link)<br>
                 $comment_tapi['links']['delete_url']::[STRING](url to delete action of the comment)<br>
                 $comment_tapi['links']['delete_text']::[STRING](text of the DELETE link)<br>
+               //OTHER<br>
+                $comment_tapi['depth']::[NUMBER](the depth level of the comment with root at 0)<br>
+                $comment_tapi['children_comments']::[ARRAY](rendable array with all children comments if any)<br>
+
+            </td>
             <td>_comment_tapi($comment)</td>
             <td>comment.tpl.php</td>
+        </tr>
+        <tr>
+           <td>Comment Master TAPI</td>
+           <td>
+               $comment_master_tapi['comments_title']::[STRING](the title of Comments Section configurable via ds_comments_title variable. See <a href="#!/configuration">Configuration</a> Section for more details)<br>
+               $comment_master_tapi['comments']::[ARRAY](array of comments organized into Tree parent-child structure )<br>
+               $comment_master_tapi['comment_form']::[ARRAY](a rendable array of comment form)<br>
+           </td>
+            <td>_comment_master_tapi($vars)</td>
+            <td>comment-master.tpl.php</td>
+        </tr>
+        <tr>
+            <td>Comment Form TAPI</td>
+            <td>
+
+            </td>
+            <td>_comment_form_tapi()</td>
+            <td>comment-form.tpl.php</td>
         </tr>
     </table>
 </section>
@@ -1468,7 +1605,7 @@
     </ol>
     <h5>How to Pass Menu To Header?</h5>
 
-    <p>Lets say you have user menu that needs to be displayed in the header. This is two step process:
+    <p>Lets say you have user menu that needs to be displayed in the header(by <a href="#!/conventions">convention</a>, the user menu is already added to the header). This is two step process:
     <ol>
         <li><b>Make Menu Available To Front End</b>
             The first step is to make the menu available in the front end in our case template file - header.tpl.php
@@ -1503,10 +1640,23 @@
     </ol>
     </p>
 
+    <h5>How to Alter Date Format For Comments?</h5>
+    <p>Perhaps, there is need of changing the format of date for comment to Month, Year only without the time. To alter
+    the format, use hook_comment_tapi_alter as following
+    [code]
+        function MODULE||THEME_comment_tapi_alter(&$comment_tapi){
+        &nbsp;$comment_date = explode(',', $comment_tapi['comment']['date']);
+        &nbsp;array_pop($comment_date);
+        &nbsp;$comment_tapi['comment']['date'] = implode(',',$comment_date);
+        }
+    [/code]
+        This will remove the time part from the date string
+    </p>
+
 
 </section>
 <section id="configuration">
-    <h3>External Configurations</h3>
+    <h3>Configurations</h3>
     <hr>
     <p>In the following are available configurations externalized in the themes settings(*.info of the current theme)
     <table>
@@ -1638,8 +1788,73 @@
         <td>Your Message</td>
         <td>The default message value in the contact form</td>
     </tr>
+    <tr>
+        <td>ds_comments_title</td>
+        <td>Comments</td>
+        <td>the title of the comments section</td>
+    </tr>
+    <tr>
+        <td>ds_comment_link_edit_text</td>
+        <td>Edit</td>
+        <td>comment link text for Edit action</td>
+    </tr>
+    <tr>
+        <td>ds_comment_link_delete_text</td>
+        <td>Delete</td>
+        <td>comment link text for Delete action</td>
+    </tr>
+    <tr>
+        <td>ds_comment_link_replay_text</td>
+        <td>Replay</td>
+        <td>comment link text for Replay action</td>
+    </tr>
     </table>
     </p>
+
+    <h4>No Wrap Configurations</h4>
+    <p>Here are theme configurations specific to No Wrap being turned on or off</p>
+    <table>
+        <thead>
+        <th>Reference</th>
+        <th>Default Value</th>
+        <th>Description</th>
+        </thead>
+        <tr>
+            <td>ds_no_wrap_comment</td>
+            <td>ON</td>
+            <td>turns on no wrap for comments layout</td>
+        </tr>
+        <tr>
+            <td>ds_no_wrap_field_body</td>
+            <td>ON</td>
+            <td>turns on no wrap layout for body field</td>
+        </tr>
+        <tr>
+            <td>ds_no_wrap_block</td>
+            <td>OFF</td>
+            <td>turns on no wrap layout for blocks</td>
+        </tr>
+        <tr>
+            <td>ds_no_wrap_sidebar_second</td>
+            <td>ON</td>
+            <td>turns on no wrap layout for second sidebar region </td>
+        </tr>
+        <tr>
+            <td>ds_no_wrap_sidebar_first</td>
+            <td>ON</td>
+            <td>turns on no wrap layout for first sidebar region</td>
+        </tr>
+        <tr>
+            <td>ds_no_wrap_region_content</td>
+            <td>ON</td>
+            <td>turns on no wrap layout for the content region</td>
+        </tr>
+        <tr>
+            <td>ds_no_wrap_page_content</td>
+            <td>ON</td>
+            <td>turns on no wrap layout for content in page scope </td>
+        </tr>
+        </table>
 </section>
 <section id="troubleshoot">
     <h3>Troubleshoot</h3>
@@ -1689,6 +1904,12 @@
         <li>fix contact form to override Drupal default site contact form with TAPI contact form if enabled </li>
         <li>enhance contact form with user name, email values of current user and added configurable message, subject value</li>
         <li>added external configuration for user name, email, subject and message</li>
+    </ul>
+    <h5>Release 0.1.5</h5>
+    <ul>
+        <li>Added No Wrap templates</li>
+        <li>Implement Comment, Comment Form, Comment Master TAPIs and everything related for templating comments functionality</li>
+        <li>added caching</li>
     </ul>
 </section>
 </div>

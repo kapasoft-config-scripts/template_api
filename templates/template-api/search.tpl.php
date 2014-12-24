@@ -1,5 +1,6 @@
-<!--
-DesignsSquare.com Template API template file - search.tpl.php with the following TAPI:
+<?php
+/*
+ DesignsSquare.com Template API template file - search.tpl.php with the following TAPI:
 1. $search_tapi
    - array of variables for search form with following API:
                 $search_tapi['id']::[STRING](search form id)<br>
@@ -11,7 +12,8 @@ DesignsSquare.com Template API template file - search.tpl.php with the following
                 $search_tapi['hidden_input']::[RENDERED ARRAY](hidden input 1)<br>
                 $search_tapi['hidden_input2']::[RENDERED ARRAY](hidden input 2)<br>
                 $search_tapi['hidden_input3']::[RENDERED ARRAY](hidden input 3)<br>
--->
+*/
+?>
 
 <ul class="page-sidebar-menu" data-auto-scroll="true" data-slide-speed="200">
     <!-- DOC: To remove the search box from the sidebar you just need to completely remove the below "sidebar-search-wrapper" LI element -->

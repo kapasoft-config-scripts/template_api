@@ -1,5 +1,5 @@
-<!--
-DesignsSquare.com Template API template file - main-menu-link.tpl.php with the following TAPI:
+<?php
+/* DesignsSquare.com Template API template file - main-menu-link.tpl.php with the following TAPI:
 1. $link_tapi
    - array of variables for main menu item with following API:
                 $link_tapi['title']::[STRING](menu link name)<br>
@@ -8,7 +8,8 @@ DesignsSquare.com Template API template file - main-menu-link.tpl.php with the f
                 $link_tapi['depth']::[NUMBER] <br>
                 $link_tapi['has_sub_menu']::[BOOLEAN](if link has sub menu) <br>
                 $link_tapi['sub_menu']::[RENDERABLE ARRAY](theme function to render sub menu)
--->
+  */
+?>
 <li <?php if ($link_tapi['active']) {
     print 'class="start active open"';
 } ?>>

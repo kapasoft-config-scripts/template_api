@@ -1,5 +1,5 @@
-<!--
-DesignsSquare.com Template API template file - status-message.tpl.php with following TAPI:
+<?php
+/*DesignsSquare.com Template API template file - status-message.tpl.php with following TAPI:
 1. $status_message_tapi
    - array of variable for messages - warning, error, status and info with following API:
                 $status_message_tapi['status']['enabled']::[BOOLEAN] (true if there is any message of this kind, otherwise false)<br>
@@ -25,11 +25,10 @@ DesignsSquare.com Template API template file - status-message.tpl.php with follo
                 $status_message_tapi['info']['size']::[STRING](Number of message)<br>
                 $status_message_tapi['info']['messages'][N]::[ARRAY] (Array of messages)<br>
                 $status_message_tapi['info']['messages'][N]::[STRING](The message itself)
+*/
+?>
 
--->
-
-
-<!--WARNING Messages-->
+<?php /*<!--WARNING Messages-->*/?>
 <?php if($status_message_tapi['warning']['enabled']) : ?>
 <div class="alert alert-warning alert-dismissible" role="alert">
     <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -44,7 +43,7 @@ DesignsSquare.com Template API template file - status-message.tpl.php with follo
 </div>
 <?php endif ?>
 
-<!--ERROR Messages-->
+<?php /*<!--ERROR Messages-->*/?>
 <?php if($status_message_tapi['error']['enabled']) : ?>
     <div class="alert alert-danger alert-dismissible" role="alert">
         <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -59,7 +58,7 @@ DesignsSquare.com Template API template file - status-message.tpl.php with follo
     </div>
 <?php endif ?>
 
-<!--STATUS Messages-->
+<?php /*<!--STATUS Messages-->*/?>
 <?php if($status_message_tapi['status']['enabled']) : ?>
     <div class="alert alert-success alert-dismissible" role="alert">
         <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -74,7 +73,7 @@ DesignsSquare.com Template API template file - status-message.tpl.php with follo
     </div>
 <?php endif ?>
 
-<!--INFO Messages-->
+<?php /*<!--INFO Messages-->*/?>
 <?php if($status_message_tapi['info']['enabled']) : ?>
     <div class="alert alert-info alert-dismissible" role="alert">
         <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>

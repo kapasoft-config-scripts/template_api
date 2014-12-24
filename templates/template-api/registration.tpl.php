@@ -1,5 +1,5 @@
-<!--
-DesignsSquare.com Template API template file - registration.tpl.php with the following TAPI:
+<?php
+/*DesignsSquare.com Template API template file - registration.tpl.php with the following TAPI:
 1. $registration_tapi
    - array of variables for registration form with the following API:
                 $registration_tapi['form_id']::[STRING](form id for registration form)<br>
@@ -17,7 +17,8 @@ DesignsSquare.com Template API template file - registration.tpl.php with the fol
                 $registration_tapi['actions']['password-reset']['text']::[STRING](text for the link)<br>
 2. $vars_tapi
     - Drupal $variables passed on(regions in $vars_tapi[page][region-id])
--->
+*/
+?>
 
 <form class="register-form" id="<?php print $registration_tapi['form_id'];?>" action="<?php print $registration_tapi['form_action'];?>" method="post">
 <h3>Sign Up</h3>
