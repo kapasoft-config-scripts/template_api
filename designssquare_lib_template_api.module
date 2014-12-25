@@ -57,14 +57,14 @@ function designssquare_lib_template_api_preprocess_page(&$vars)
             '#theme' => 'template_api_contact_form',
             '#contact_tapi' => _contact_tapi('contact'),
         );
-    }elseif(is_tapi_enabled('contact-block')){
+    } elseif (is_tapi_enabled('contact-block')) {
         $vars['contact_block_form'] = array(
             '#theme' => 'template_api_contact_block_form',
             '#contact_tapi' => _contact_tapi('contact_block'),
         );
-    }elseif(is_tapi_enabled('contact-inquiry')){
+    } elseif (is_tapi_enabled('contact-teaser')) {
         $vars['contact_inquiry_form'] = array(
-            '#theme' => 'template_api_contact_inquiry_form',
+            '#theme' => 'template_api_contact_teaser_form',
             '#contact_tapi' => _contact_tapi('inquiry'),
         );
     }
@@ -80,23 +80,34 @@ function designssquare_lib_template_api_preprocess_page(&$vars)
 
     /*********NO-WRAP******************/
 
-        if (isset($node)) {
-            $type = $node->type;
-            switch ($type) {
-                case 'content':
-                    if(is_no_wrap('page_'.$type)){
-                        $vars['theme_hook_suggestions'][] = 'region__no_wrap_ds';
-                    }
-                    break;
-            }
+    if (isset($node)) {
+        $type = $node->type;
+        switch ($type) {
+            case 'content':
+                if (is_no_wrap('page_' . $type)) {
+                    $vars['theme_hook_suggestions'][] = 'region__no_wrap_ds';
+                }
+                break;
         }
-}
-
-function designssquare_lib_template_api_preprocess_block(&$vars){
-    if(is_no_wrap('block')){
-        $vars['theme_hook_suggestions'][] = 'block__no_wrap_ds';
     }
 }
+
+function designssquare_lib_template_api_preprocess_block(&$vars)
+{
+    if (is_no_wrap('block')) {
+        $vars['theme_hook_suggestions'][] = 'block__no_wrap_ds';
+    }
+
+    switch ($vars['block_html_id']) {
+        case 'block-designssquare-lib-template-api-contact-form-teaser':
+        case 'block-designssquare-lib-template-api-contact-form-block':
+        case 'block-designssquare-lib-template-api-contact-form':
+            $vars['theme_hook_suggestions'][] = 'block__no_wrap';
+            $vars['theme_hook_suggestions'][] = 'block__no_wrap_ds';
+            break;
+    }
+}
+
 
 //function designssquare_lib_template_api_preprocess_node(&$vars, $hook)
 //{
@@ -109,7 +120,7 @@ function designssquare_lib_template_api_preprocess_block(&$vars){
 
 function designssquare_lib_template_api_preprocess_comment_wrapper(&$vars)
 {
-    if(is_no_wrap('comment')){
+    if (is_no_wrap('comment')) {
         $vars['theme_hook_suggestions'][] = 'comment__no_wrap_ds';
     }
 }
@@ -128,23 +139,31 @@ function designssquare_lib_template_api_preprocess_field(&$vars, $hook)
 
 function designssquare_lib_template_api_preprocess_region(&$vars, $hook)
 {
-    switch ($vars['region']) {
-        case 'sidebar-second':
-            if (is_no_wrap('sidebar-second')) {
-                $vars['theme_hook_suggestions'][] = 'region__no_wrap_ds';
-            }
-            break;
-        case 'sidebar-first':
-            if (is_no_wrap('sidebar-first')) {
-                $vars['theme_hook_suggestions'][] = 'region__no_wrap_ds';
-            }
-            break;
-        case 'content':
-            if (is_no_wrap('region_content')) {
-                $vars['theme_hook_suggestions'][] = 'region__no_wrap_ds';
-            }
-            break;
+    if (is_no_wrap('region')) {
+        $vars['theme_hook_suggestions'][] = 'region__no_wrap_ds';
     }
+//    switch ($vars['region']) {
+//        case 'sidebar-second':
+//            if (is_no_wrap('sidebar-second')) {
+//                $vars['theme_hook_suggestions'][] = 'region__no_wrap_ds';
+//            }
+//            break;
+//        case 'sidebar-first':
+//            if (is_no_wrap('sidebar-first')) {
+//                $vars['theme_hook_suggestions'][] = 'region__no_wrap_ds';
+//            }
+//            break;
+//        case 'content':
+//            if (is_no_wrap('region_content')) {
+//                $vars['theme_hook_suggestions'][] = 'region__no_wrap_ds';
+//            }
+//            break;
+//        case 'region':
+//            if (is_no_wrap('region_region')) {
+//                $vars['theme_hook_suggestions'][] = 'region__no_wrap_ds';
+//            }
+//            break;
+//    }
 }
 
 function designssquare_lib_template_api_theme()
@@ -247,12 +266,12 @@ function designssquare_lib_template_api_theme()
             ),
             'path' => get_ds_template_path('designssquare_lib_template_api', 'contact-block'),
         ),
-        'template_api_contact_inquiry_form' => array(
-            'template' => 'contact-inquiry',
+        'template_api_contact_teaser_form' => array(
+            'template' => 'contact-teaser',
             'variables' => array(
                 'contact_tapi' => NULL,
             ),
-            'path' => get_ds_template_path('designssquare_lib_template_api', 'contact-inquiry'),
+            'path' => get_ds_template_path('designssquare_lib_template_api', 'contact-teaser'),
         ),
         'template_api_comment' => array(
             'template' => 'comment',
@@ -264,7 +283,7 @@ function designssquare_lib_template_api_theme()
         'template_api_comment_master' => array(
             'template' => 'comment-master',
             'variables' => array(
-                  'content' => NULL,
+                'content' => NULL,
             ),
             'path' => get_ds_template_path('designssquare_lib_template_api', 'comment-master'),
         ),
@@ -346,17 +365,17 @@ function designssquare_lib_template_api_form($variables)
             //override password reset form
             if (is_tapi_enabled('password-reset')) {
                 $variables['messages'] = theme('status_messages');
-                $output =  theme('template_api_password_reset_form', array('password_reset_tapi' => _user_pass_tapi(), 'vars_tapi' => $variables));
+                $output = theme('template_api_password_reset_form', array('password_reset_tapi' => _user_pass_tapi(), 'vars_tapi' => $variables));
             }
             break;
         case 'search_block_form':
             //to remove wrappers
-            $output =  $element['#children'];
+            $output = $element['#children'];
             break;
         case 'contact_site_form':
             //override default contact form
             if (is_tapi_enabled('contact')) {
-                $output =  theme('template_api_contact_form', array('contact_tapi' => _contact_tapi('contact')));
+                $output = theme('template_api_contact_form', array('contact_tapi' => _contact_tapi('contact')));
             }
             break;
         case 'comment_node_blog_form':
@@ -364,7 +383,7 @@ function designssquare_lib_template_api_form($variables)
             //override default contact form
             if (is_tapi_enabled('comment-form')) {
                 $comment = (isset($element['#entity'])) ? $element['#entity'] : NULL;
-                $output =  theme('template_api_comment_form', array('comment_form_tapi' => _comment_form_tapi($form_id, $comment)));
+                $output = theme('template_api_comment_form', array('comment_form_tapi' => _comment_form_tapi($form_id, $comment)));
             }
             break;
 
@@ -397,10 +416,10 @@ function designssquare_lib_template_api_status_message(&$variables, $clear = fal
         //for admin themes keep the original layout
         $output = theme_status_messages($variables);
     } else {
-            $status_message_tapi = _status_message_tapi($clear);
-            $output = theme('template_api_status_message', array(
-                'status_message_tapi' => $status_message_tapi,
-            ));
+        $status_message_tapi = _status_message_tapi($clear);
+        $output = theme('template_api_status_message', array(
+            'status_message_tapi' => $status_message_tapi,
+        ));
     }
 
     return $output;
@@ -408,7 +427,8 @@ function designssquare_lib_template_api_status_message(&$variables, $clear = fal
 
 /*****COMMENT******/
 //single comment template
-function template_api_comment(&$variables){
+function template_api_comment(&$variables)
+{
     //@ToDo get comment
     $comment = $variables['elements']['#comment'];
     unset($variables['elements']['#prefix']);
@@ -420,7 +440,8 @@ function template_api_comment(&$variables){
 }
 
 //layout for the parent of comments and comment form
-function template_api_comment_master(&$variables){
+function template_api_comment_master(&$variables)
+{
     $vars = array_shift($variables);
 
 //    $all_comments = array();
@@ -588,12 +609,12 @@ function designssquare_lib_template_api_menu_tree(&$variables)
     $menu_item_raw = array_shift($variables);
     $menu_item = array_shift($menu_item_raw);
     $menu_name = $menu_item['#original_link']['menu_name'];
-    if(!isset($menu_item)){
-        watchdog('notice','Template API: menu not specified designssquare_lib_template_api_menu_tree()...defaults to main-menu',array(),WATCHDOG_CRITICAL);
+    if (!isset($menu_item)) {
+        watchdog('notice', 'Template API: menu not specified designssquare_lib_template_api_menu_tree()...defaults to main-menu', array(), WATCHDOG_CRITICAL);
         $menu_name = 'no-menu-defined';
     }
-    $menu_token = substr($menu_name,0,5);
-    $file_menu_name =  ($menu_token == 'menu-') ? substr($menu_name,5) : $menu_name ;
+    $menu_token = substr($menu_name, 0, 5);
+    $file_menu_name = ($menu_token == 'menu-') ? substr($menu_name, 5) : $menu_name;
     $menu_template = drupal_get_path('theme', variable_get('theme_default')) . '/templates/template-api/' . $file_menu_name . '.tpl.php';
     $menu_link_template = drupal_get_path('theme', variable_get('theme_default')) . '/templates/template-api/' . $file_menu_name . '-link.tpl.php';
 
@@ -919,8 +940,8 @@ function is_tapi_enabled($element)
         case 'contact-block':
             $template_file = '/templates/template-api/contact-block.tpl.php';
             break;
-        case 'contact-inquiry':
-            $template_file = '/templates/template-api/contact-inquiry.tpl.php';
+        case 'contact-teaser':
+            $template_file = '/templates/template-api/contact-teaser.tpl.php';
             break;
         case 'status-message':
             $template_file = '/templates/template-api/status-message.tpl.php';
@@ -956,18 +977,26 @@ function is_no_wrap($component)
             $nowrap_status = theme_get_setting('ds_no_wrap_page_content');
             $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : true;
             break;
-        case 'region_content':
-            $nowrap_status = theme_get_setting('ds_no_wrap_region_content');
+        case 'region':
+            $nowrap_status = theme_get_setting('ds_no_wrap_region');
             $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : true;
             break;
-        case 'sidebar-first':
-            $nowrap_status = theme_get_setting('ds_no_wrap_sidebar_first');
-            $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : true;
-            break;
-        case 'sidebar-second':
-            $nowrap_status = theme_get_setting('ds_no_wrap_sidebar_second');
-            $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : true;
-            break;
+//        case 'region_content':
+//            $nowrap_status = theme_get_setting('ds_no_wrap_region_content');
+//            $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : true;
+//            break;
+//        case 'region_region':
+//            $nowrap_status = theme_get_setting('ds_no_wrap_region_region');
+//            $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : true;
+//            break;
+//        case 'sidebar-first':
+//            $nowrap_status = theme_get_setting('ds_no_wrap_sidebar_first');
+//            $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : true;
+//            break;
+//        case 'sidebar-second':
+//            $nowrap_status = theme_get_setting('ds_no_wrap_sidebar_second');
+//            $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : true;
+//            break;
         case 'block':
             $nowrap_status = theme_get_setting('ds_no_wrap_block');
             $status = (isset($nowrap_status) && $nowrap_status) ? $nowrap_status : false;
@@ -994,32 +1023,88 @@ function build_comment_tree($comments, &$iterator = 0)
 {
     $sibling_comments = array();
 //    for($iterator; $iterator < count($comments); $iterator++){
-    while($iterator < count($comments)){
+    while ($iterator < count($comments)) {
         $current_comment = $comments[$iterator]['#comment'];
         $next_comment = isset($comments[$iterator + 1]) ? $comments[$iterator + 1]['#comment'] : NULL;
         $comment_tapi = _comment_tapi($current_comment);
-        $iterator++;//set up for next iteration
+        $iterator++; //set up for next iteration
 
 
-        if(isset($next_comment) && $current_comment->depth < $next_comment->depth){
+        if (isset($next_comment) && $current_comment->depth < $next_comment->depth) {
 //            $iterator++;//skip
             $comment_tapi['children_comments'] = build_comment_tree($comments, $iterator);
-        }elseif(isset($next_comment) && $current_comment->depth > $next_comment->depth){
+        } elseif (isset($next_comment) && $current_comment->depth > $next_comment->depth) {
             //break out...reach it bottom and the next sibling is parent not sibling
 //            $iterator++;//skip
-            $sibling_comments[] =  array(
+            $sibling_comments[] = array(
                 '#theme' => 'template_api_comment',
                 '#comment_tapi' => $comment_tapi,
             );
             break;
-        }else{
+        } else {
             //continue because its sibling comment
         }
 
-        $sibling_comments[] =  array(
+        $sibling_comments[] = array(
             '#theme' => 'template_api_comment',
             '#comment_tapi' => $comment_tapi,
         );
     }
     return $sibling_comments;
+}
+
+
+/*****CREATING BLOCK********/
+function designssquare_lib_template_api_block_info()
+{
+    $blocks = array();
+    $blocks['contact_form'] = array(
+        'info' => t('DesignsSquare: Template API: Contact Form'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+    );
+    $blocks['contact_form_block'] = array(
+        'info' => t('DesignsSquare: Template API: Contact Form Block'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+    );
+    $blocks['contact_form_teaser'] = array(
+        'info' => t('DesignsSquare: Template API: Contact Form Teaser'), //admin ui block name
+        'properties' => array('administrative' => TRUE),
+    );
+    return $blocks;
+}
+
+/**
+ * Implements hook_block_view
+ * the rendered block content and title
+ */
+function designssquare_lib_template_api_block_view($delta = '')
+{
+    $block = array();
+
+    switch ($delta) {
+        case 'contact_form':
+        {
+            $block['subject'] = t('');
+//            $block['content'] = array(
+//                '#markup' => build_contact($delta),
+//            );
+            $block['content'] = theme('template_api_contact_form', array('contact_tapi' => _contact_tapi('contact')));
+            break;
+        }
+//        case 'inquiry_form_horizon':
+        case 'contact_form_block':
+        {
+            $block['subject'] = t('');
+            $block['content'] = theme('template_api_contact_block_form', array('contact_tapi' => _contact_tapi('contact')));
+            break;
+        }
+        case 'contact_form_teaser':
+        {
+            $block['subject'] = t('');
+            $block['content'] = theme('template_api_contact_teaser_form', array('contact_tapi' => _contact_tapi('contact')));
+            break;
+        }
+    }
+
+    return $block;
 }

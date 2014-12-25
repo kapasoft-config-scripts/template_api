@@ -320,9 +320,16 @@ function _search_tapi()
 function _contact_tapi($category = 'contact')
 {
     global $user;
+    if(($user->uid == 0 ) && !user_access('administer contact forms')){
+        //adjust roles for anonymous user
+        user_role_change_permissions(1, array('administer contact forms' =>  TRUE));
+    }
+    global $user;
     $contact_tapi = array();
     require_once drupal_get_path('module', 'contact') . '/contact.pages.inc';
     $contact_form_array = drupal_get_form('contact_site_form');
+//    $contact_form_array = ds_contact_site_form('contact_site_form');
+
     //form specific
     $contact_tapi['id'] = str_replace('_', '-', $contact_form_array['#form_id']);
     $contact_tapi['action'] = $contact_form_array['#action'];
@@ -831,4 +838,3 @@ function _user_actions()
     }
     return $user_actions;
 }
-
