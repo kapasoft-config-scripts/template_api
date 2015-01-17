@@ -408,7 +408,7 @@ function designssquare_lib_template_api_status_message(&$variables, $clear = fal
 {
     global $user;
     $roles = array_intersect_key(user_roles(), $user->roles);
-    if (path_is_admin(current_path()) && in_array('administrator', $roles)) {
+    if ((path_is_admin(current_path()) || preg_match('/ajax/',current_path())) && in_array('administrator', $roles)) {
         //ensure the styles are admin
 //        $sys_module = drupal_get_path('module', 'system');
 //        drupal_add_css($sys_module . '/system.messages.css', array('type' => 'file', 'weight' => CSS_SYSTEM , 'preprocess' => FALSE));
@@ -593,7 +593,7 @@ function ds_menu_get_active_breadcrumb()
 //            } else {
             $breadcrumb[] = array(
                 'label' => $parent['title'],
-                'url' => '/' . $parent['href'],
+                'url' => base_path() . $parent['href'],
                 'last' => false,
                 'first' => false,
             );
