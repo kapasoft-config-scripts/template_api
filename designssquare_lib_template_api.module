@@ -6,16 +6,16 @@ function designssquare_lib_template_api_preprocess_html(&$vars)
 //    if (!path_is_admin(current_path())) {
     //NO templating in ADMIN
     /****Header******/
-    $header_tapi = _header_tapi();
-    //header TAPI general
-    $vars['header_tapi'] = $header_tapi;
     if (is_tapi_enabled('header')) {
+        $header_tapi = _header_tapi();
+        //header TAPI general
+        $vars['header_tapi'] = $header_tapi;
         $header = array(
             '#theme' => 'template_api_header',
             '#header_tapi' => $header_tapi,
             '#vars_tapi' => $vars,
         );
-        $vars['header'] = $header;
+        $vars['header'] = drupal_render($header);
     }
 
     /***Footer***/
@@ -406,6 +406,7 @@ function designssquare_lib_template_api_search()
 
 function designssquare_lib_template_api_status_message(&$variables, $clear = false)
 {
+
     global $user;
     $roles = array_intersect_key(user_roles(), $user->roles);
     if ((path_is_admin(current_path()) || preg_match('/ajax/',current_path())) && in_array('administrator', $roles)) {
@@ -621,7 +622,7 @@ function designssquare_lib_template_api_menu_tree(&$variables)
     if (!file_exists($menu_template) || !file_exists($menu_link_template)) {
         //menu tapi isn't enabled...use Drupal's default
         $output = '<ul class="menu nav navbar-nav">';
-        $output .= (isset($variables['tree']) || empty($variables['tree'])) ? $variables['tree'] : '';
+        $output .= (isset($variables['tree']) && !empty($variables['tree'])) ? $variables['tree'] : '';
         $output .= '</ul>';
     } else {
         $active_trail = menu_set_active_trail();
@@ -951,7 +952,7 @@ function is_tapi_enabled($element)
     }
 
     //currently template api is enabled depending if the template is present
-    return file_exists($path_to_theme . $template_file);
+    return (file_exists($path_to_theme . $template_file) && !path_is_admin(current_path())) ? TRUE : FALSE;
 }
 
 

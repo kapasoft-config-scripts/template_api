@@ -35,9 +35,9 @@
 **/
 ?>
 
-<div class="page-header navbar <?php print $header_tapi['class'];?>">
+<div class="page-header navbar">
 <!-- BEGIN HEADER INNER -->
-<div class="page-header-inner <?php print $header_tapi['layout']; ?>">
+<div class="page-header-inner">
 <!-- BEGIN LOGO -->
 <div class="page-logo">
     <a href="<?php print $header_tapi['site']['front_url']; ?>"  ><h3 style="margin-top:10px;margin-bottom:6px">
@@ -73,16 +73,6 @@
     </a>
     <?php print render($vars_tapi['user_menu'])?>
 </li>
-<!-- END USER LOGIN DROPDOWN -->
-<?php if($header_tapi['show_sidebar']): ?>
-<!-- BEGIN QUICK SIDEBAR TOGGLER -->
-<li class="dropdown dropdown-quick-sidebar-toggler">
-    <a href="javascript:;" class="dropdown-toggle">
-        <i class="icon-logout"></i>
-    </a>
-</li>
-<!-- END QUICK SIDEBAR TOGGLER -->
-<?php endif; ?>
 </ul>
 </div>
 <!-- END TOP NAVIGATION MENU -->

@@ -194,6 +194,13 @@ function _page_tapi($vars)
 
             $info_instance = field_get_items('node', $node, 'field_page_information');
             $info_instance_val = (!empty($info_instance[0])) ? field_view_value('node', $node, 'field_page_information', $info_instance[0]) : '';
+
+            //check to see if body summary has a value
+            if(!isset($info_instance_val) || empty($info_instance_val)){
+                $body_instance = field_get_items('node', $node, 'body');
+                $info_instance_val = (isset($body_instance[0]['summary']) && !empty($body_instance[0]['summary'])) ? $body_instance[0]['summary'] : '';
+            }
+
             $page_tapi['intro'] = htmlspecialchars_decode(render($info_instance_val));
 
             //*****backward compatable and should be using intro field instead the slogan
@@ -275,12 +282,14 @@ function _header_tapi()
         $main_menu_name = 'main-menu';
 //    $main_menu_links = ds_build_menu($main_menu_name);
 //    $head_tapi['main-menu'] = _menu_tapi($main_menu_links, 0, $main_menu_name);
+        module_load_include('module', 'designssquare_lib');
         $head_tapi['main-menu'] = ds_build_menu($main_menu_name);
 
         $user_menu_name = 'user-menu';
 //    $user_menu_links = ds_build_menu($user_menu_name);
 //    $head_tapi['user-menu'] = _menu_tapi($user_menu_links, 0, $user_menu_name);
         $head_tapi['user-menu'] = ds_build_menu($user_menu_name);
+
 
 
         drupal_alter('header_tapi', $head_tapi);

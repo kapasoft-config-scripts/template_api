@@ -768,9 +768,9 @@
         <tr>
             <td>Contact Forms Are Like Blocks That Need to Be Assigned to Regions</td>
             <td>There 3 Different Contact Blocks Available in UI To Assign Any Region</td>
-            <td>N/A</td>
+            <td>There are no specific requirements. Available out of box</td>
             <td>
-                see details at <a href="#!/no_wraps">No Wraps</a>
+                see more specifics at <a href="#!/contact_tapi">Contact API</a>
             </td>
         </tr>
     </table>
@@ -802,21 +802,21 @@
             <td>hook_preprocess_comment_wrapper</td>
             <td>ds_no_wrap_comment</td>
             <td>ON</td>
-            <td>ds-comment--no-wrap.tpl.php</td>
+            <td>comment--no-wrap-ds.tpl.php</td>
         </tr>
         <tr>
             <td>Body</td>
             <td>hook__preprocess_field</td>
             <td>ds_no_wrap_field_body</td>
             <td>ON</td>
-            <td>ds-field--no-wrap.tpl.php</td>
+            <td>field--no-wrap-ds.tpl.php</td>
         </tr>
         <tr>
             <td>Block</td>
             <td>hook__preprocess_block</td>
             <td>ds_no_wrap_block</td>
             <td>OFF</td>
-            <td>ds-block--no-wrap.tpl.php</td>
+            <td>block--no-wrap-ds.tpl.php</td>
         </tr>
         <!--<tr>-->
         <!--<td>Sidebar Second</td>-->
@@ -844,14 +844,14 @@
             <td>hook__preprocess_region</td>
             <td>ds_no_wrap_region</td>
             <td>ON</td>
-            <td>ds-region--no-wrap.tpl.php</td>
+            <td>region--no-wrap-ds.tpl.php</td>
         </tr>
         <tr>
             <td>Page Content</td>
             <td>hook__preprocess_page</td>
             <td>ds_no_wrap_page_content</td>
             <td>ON</td>
-            <td>ds-region--no-wrap.tpl.php</td>
+            <td>region--no-wrap-ds.tpl.php</td>
         </tr>
     </table>
     <p>The configurations are located in Themes *.info file</p>
@@ -1971,6 +1971,12 @@
         <li>refactoring No Wrap template to trigger for all Regions not only certain ones
         </li>
         <li>renaming contact form template to contact-teaser.tpl.php</li>
+    </ul>
+    <h5>Release 0.1.11</h5>
+    <ul>
+        <li>Turn off Template API processing when in Drupal Admin theme</li>
+        <li>Added Drupal Body summary into Page Tapi</li>
+        <li>Adding html template sample</li>
     </ul>
 </section>
 </div>
