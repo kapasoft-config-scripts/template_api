@@ -135,6 +135,7 @@
         <li><a href="#triggers">Triggers</a></li>
         <li><a href="#conventions">Conventions</a></li>
         <li><a href="#no_wraps">No Wraps</a></li>
+        <li><a href="#html_tapi">Html TAPI</a></li>
         <li><a href="#header_tapi">Header TAPI</a></li>
         <li><a href="#footer_tapi">Footer TAPI</a></li>
         <li><a href="#breadcrumbs_tapi">Breadcrumbs TAPI</a></li>
@@ -167,7 +168,7 @@
     <h2>Making themeing Drupal easy and fast</h2>
     <hr>
     <ul>
-        <li>Last Updated: Nov 22, 2014</li>
+        <li>Last Updated: Apr 27, 2015</li>
         <li>Developed By: DesignsSquare.com</li>
         <li><a href="">
         </a>
@@ -261,6 +262,12 @@
             <th>Interface</th>
             <th>Scope</th>
             <th>Description</th>
+        </tr>
+        <tr>
+            <td>HTML TAPI</td>
+            <td>$html_tapi (see details at <a href="#!/html_tapi">'Html TAPI'</a> section)</td>
+            <td>HTML</td>
+            <td>Template API used in html scope(html.tpl.php) for customization</td>
         </tr>
         <tr>
             <td>Header TAPI</td>
@@ -599,6 +606,7 @@
         step. You have to include the Header or Footer
         elements in your template files themselves for Template API mechanism to work.</p>
 
+    <p><b>Don't forget to refresh cache after copying the template file into local theme to trigger Tamplate API and template file override!</b></p>
     <p>Here is quick overview of triggers for each element</p>
     <table>
         <thead>
@@ -651,7 +659,7 @@
         </tr>
 
     </table>
-
+    <p><b>Don't forget to refresh cache after copying the template file into local theme to trigger Tamplate API and template file override!</b></p>
 
 </section>
 <section id="conventions">
@@ -856,6 +864,26 @@
     </table>
     <p>The configurations are located in Themes *.info file</p>
 </section>
+<section id="html_tapi">
+    <h3>HTML TAPI</h3>
+    <hr>
+    <table>
+        <thead>
+        <th>Content Type</th>
+        <th>API</th>
+        <th>Methods Implementing API</th>
+        <th>Scope</th>
+        </thead>
+        <tr>
+            <td>Html TAPI</td>
+            <td>None, provided for other modules to assist with custimization via alter hook</td>
+            <td>_html_tapi()</td>
+            <td>html.tpl.php
+            </td>
+        </tr>
+    </table>
+</section>
+
 <section id="header_tapi">
     <h3>Header TAPI</h3>
     <hr>
@@ -1112,17 +1140,25 @@
         <tr>
             <td>Comment TAPI</td>
             <td>
-                //AUTHOR INFO<br>
+                //AUTHOR AUTHOR<br>
                 $comment_tapi['author']::[ARRAY](info about the comment author)<br>
                 $comment_tapi['author']['name']::[STRING](the name of the comment author)<br>
                 $comment_tapi['author']['avatar_url']::[STRING](url to the avatar for comment author. If not
                 specified, it defaults to '/sites/default/file/avatar.jpg)<br>
                 $comment_tapi['author']['profile_url']::[STRING](url to the profile of comment author)<br>
                 //COMMENT INFO<br>
-                $comment_tapi['comment']::[ARRAY](info about the comment itself)
+                $comment_tapi['comment']::[ARRAY](info about the comment itself)<br>
                 $comment_tapi['comment']['subject']::[STRING](the subject of the comment)<br>
                 $comment_tapi['comment']['content']::[STRING](the content of the comment)<br>
+                $comment_tapi['comment']['children_comments'::[ARRAY](children of the comment)<br>
+
                 $comment_tapi['comment']['date']::[STRING](the date of comment submitted)<br>
+                //COMMENT DATE<br>
+                $comment_tapi['comment']['date_raw']::[ARRAY](date broken into month, day, year)<br>
+                $comment_tapi['comment']['date_raw']['day']::[STRING](the day of comment submitted)<br>
+                $comment_tapi['comment']['date_raw']['year']::[STRING](the year of comment submitted)<br>
+                $comment_tapi['comment']['date_raw']['month']::[STRING](the month of comment submitted)<br>
+
                 //COMMENT LINKS<br>
                 $comment_tapi['links']::[ARRAY](info of the action links for the comment)
                 $comment_tapi['links']['access']::[BOOLEAN](determines if action links should be displayd for the
@@ -1135,7 +1171,7 @@
                 $comment_tapi['links']['delete_text']::[STRING](text of the DELETE link)<br>
                 //OTHER<br>
                 $comment_tapi['depth']::[NUMBER](the depth level of the comment with root at 0)<br>
-                $comment_tapi['children_comments']::[ARRAY](rendable array with all children comments if any)<br>
+                $comment_tapi['children_comments']::[ARRAY](renderable array with all children comments if any)<br>
 
             </td>
             <td>_comment_tapi($comment)</td>
@@ -1147,8 +1183,9 @@
                 $comment_master_tapi['comments_title']::[STRING](the title of Comments Section configurable via
                 ds_comments_title variable. See <a href="#!/configuration">Configuration</a> Section for more
                 details)<br>
+                $comment_master_tapi['comment_count']::[STRING](count of the total comments)<br>
                 $comment_master_tapi['comments']::[ARRAY](array of comments organized into Tree parent-child structure )<br>
-                $comment_master_tapi['comment_form']::[ARRAY](a rendable array of comment form)<br>
+                $comment_master_tapi['comment_form']::[ARRAY](a renderable array of comment form)<br>
             </td>
             <td>_comment_master_tapi($vars)</td>
             <td>comment-master.tpl.php</td>
@@ -1162,6 +1199,16 @@
             <td>comment-form.tpl.php</td>
         </tr>
     </table>
+
+    <h4>Comments IN Practice</h4>
+    <p>All the replays of the comment is in  $comment_tapi['children_comments'] in the renderable array, so you can print
+        out them as following(see provided example of comment.tpl.php for details):
+    <code><br>
+       if(isset($comment_tapi['children_comments'])):<br>
+        &nbsp;&nbsp;print drupal_render($comment_tapi['children_comments']);<br>
+       endif;<br>
+    </code>
+    </p>
 </section>
 <section id="search_tapi">
     <h3>Search Template API</h3>
@@ -1526,6 +1573,7 @@
                 <li>hook_theme_tapi_alter(&$theme_tapi)</li>
                 <li>hook_page_tapi_alter(&$page_tapi)</li>
                 <li>hook_header_tapi_alter(&$header_tapi)</li>
+                <li>hook_html_tapi_alter(&$html_tapi)</li>
                 <li>hook_search_tapi_alter(&$search_tapi)</li>
                 <li>hook_contact_tapi_alter(&$contact_tapi)</li>
                 <li>hook_comment_tapi_alter(&$comment_tapi)</li>
@@ -1535,6 +1583,7 @@
                 <li>hook_registration_alter(&$registration_tapi)</li>
                 <li>hook_login_alter(&$login_tapi)</li>
                 <li>hook_password_reset_alter(&$password_reset_tapi)</li>
+                <li>hook_html_tapi_alter(&$html_tapi)</li>
             </ul>
             <p>The name of hooks should be self explanatory of what TAPI it modifies as well as the parameter name</p>
         </li>
@@ -1909,11 +1958,18 @@
 <section id="troubleshoot">
     <h3>Troubleshoot</h3>
     <hr>
-    <h5>1. Search Form doesn't work</h5>
-
+    <h5>1. Search Form Doesn't Work</h5>
     <p>Ensure that "form" tag has method with value "post"(i.e.<code> method="post"</code> ) in it. In addition, check
-        all the elements of
-        Search TAPI is included</p>
+        all the elements of Search TAPI is included</p>
+
+    <h3>2. Comment Form Doesn't Template</h3>
+    <p>Make sure that, besides the comment-form.tpl.php file, you also include comment-master.tpl.php in your local theme to trigger comment form to work</p>
+
+<h3>3. Templating Is Not Working(Template files are not overriding)</h3>
+    <p>After copying the template files in the theme to triger TAPI, make sure to refresh cache</p>
+
+    <h3>4. Contact Form Gives Error or Not Templating</h3>
+    <p>Make sure the module - Contact is enabled</p>
 </section>
 <section id="backlog">
     <h3>Things In Progress</h3>
@@ -1922,7 +1978,6 @@
         <li>add drush command to create boilerplates template files. Each template file will have documentation on all
             available API points
         </li>
-        <li>add status-message template and template API for status messages</li>
     </ul>
 </section>
 <section id="releases">
@@ -1977,6 +2032,13 @@
         <li>Turn off Template API processing when in Drupal Admin theme</li>
         <li>Added Drupal Body summary into Page Tapi</li>
         <li>Adding html template sample</li>
+    </ul>
+    <h5>Release 0.1.12</h5>
+    <ul>
+        <li>Added HTML_TAPI and hook to alter by other modules</li>
+        <li>added sample template comment-master.tpl.php</li>
+        <li>fix bug to ensure comment form is triggered for all different content types</li>
+        <li>enhanced Comment_TAPI with raw date of month, year, day and comment count</li>
     </ul>
 </section>
 </div>

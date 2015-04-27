@@ -3,8 +3,11 @@ require dirname(__FILE__) . '/includes/template_api.inc';
 
 function designssquare_lib_template_api_preprocess_html(&$vars)
 {
-//    if (!path_is_admin(current_path())) {
-    //NO templating in ADMIN
+
+
+    /***HTML****/
+    $vars['html_tapi'] = _html_tapi();
+
     /****Header******/
     if (is_tapi_enabled('header')) {
         $header_tapi = _header_tapi();
@@ -378,17 +381,25 @@ function designssquare_lib_template_api_form($variables)
                 $output = theme('template_api_contact_form', array('contact_tapi' => _contact_tapi('contact')));
             }
             break;
-        case 'comment_node_blog_form':
-        case 'comment_node_page_form':
-            //override default contact form
-            if (is_tapi_enabled('comment-form')) {
-                $comment = (isset($element['#entity'])) ? $element['#entity'] : NULL;
-                $output = theme('template_api_comment_form', array('comment_form_tapi' => _comment_form_tapi($form_id, $comment)));
-            }
+//        case 'comment_node_blog_form':
+//        case 'comment_node_page_form':
+//            //override default contact form
+//            if (is_tapi_enabled('comment-form')) {
+//                $comment = (isset($element['#entity'])) ? $element['#entity'] : NULL;
+//                $output = theme('template_api_comment_form', array('comment_form_tapi' => _comment_form_tapi($form_id, $comment)));
+//            }
             break;
 
 //        default:
 //            $output = '<form' . drupal_attributes($element['#attributes']) . '><div>' . $element['#children'] . '</div></form>';
+    }
+
+    //all comment forms
+    if(strpos($form_id, 'omment_node_') && strpos($form_id, '_form')){
+        if (is_tapi_enabled('comment-form')) {
+            $comment = (isset($element['#entity'])) ? $element['#entity'] : NULL;
+            $output = theme('template_api_comment_form', array('comment_form_tapi' => _comment_form_tapi($form_id, $comment)));
+        }
     }
 
     return $output;
@@ -409,7 +420,7 @@ function designssquare_lib_template_api_status_message(&$variables, $clear = fal
 
     global $user;
     $roles = array_intersect_key(user_roles(), $user->roles);
-    if ((path_is_admin(current_path()) || preg_match('/ajax/',current_path())) && in_array('administrator', $roles)) {
+    if ((path_is_admin(current_path()) || preg_match('/ajax/', current_path())) && in_array('administrator', $roles)) {
         //ensure the styles are admin
 //        $sys_module = drupal_get_path('module', 'system');
 //        drupal_add_css($sys_module . '/system.messages.css', array('type' => 'file', 'weight' => CSS_SYSTEM , 'preprocess' => FALSE));
@@ -893,66 +904,74 @@ function ds_bootstrap_status_messages($variables, $clear = False)
  */
 function is_tapi_enabled($element)
 {
-    $path_to_theme = drupal_get_path('theme', variable_get('theme_default'));
 
-    switch ($element) {
-        case 'breadcrumb':
-            $template_file = '/templates/template-api/breadcrumbs.tpl.php';
-            break;
-        case 'search':
-            $template_file = '/templates/template-api/search.tpl.php';
-            break;
-        case 'registration':
-            $template_file = '/templates/template-api/registration.tpl.php';
-            break;
-        case 'login':
-            $template_file = '/templates/template-api/login.tpl.php';
-            break;
-        case 'password-reset':
-            $template_file = '/templates/template-api/password-reset.tpl.php';
-            break;
-        case 'comment':
-            $template_file = '/templates/template-api/comment.tpl.php';
-            break;
-        case 'comment-master':
-            $template_file = '/templates/template-api/comment-master.tpl.php';
-            break;
-        case 'comment-form':
-            $template_file = '/templates/template-api/comment-form.tpl.php';
-            break;
-        case 'main-menu':
-            $template_file = '/templates/template-api/main-menu.tpl.php';
-            break;
-        case 'user-menu':
-            $template_file = '/templates/template-api/user-menu.tpl.php';
-            break;
-        case 'bottom-menu':
-            $template_file = '/templates/template-api/bottom-menu.tpl.php';
-            break;
-        case 'footer':
-            $template_file = '/templates/template-api/footer.tpl.php';
-            break;
-        case 'header':
-            $template_file = '/templates/template-api/header.tpl.php';
-            break;
-        case 'contact':
-            $template_file = '/templates/template-api/contact.tpl.php';
-            break;
-        case 'contact-block':
-            $template_file = '/templates/template-api/contact-block.tpl.php';
-            break;
-        case 'contact-teaser':
-            $template_file = '/templates/template-api/contact-teaser.tpl.php';
-            break;
-        case 'status-message':
-            $template_file = '/templates/template-api/status-message.tpl.php';
-            break;
-        default:
-            $template_file = 'no-template-present';
+    //disable for admin interface
+    if (!path_is_admin(current_path())) {
+
+        $path_to_theme = drupal_get_path('theme', variable_get('theme_default'));
+
+        switch ($element) {
+            case 'breadcrumb':
+                $template_file = '/templates/template-api/breadcrumbs.tpl.php';
+                break;
+            case 'search':
+                $template_file = '/templates/template-api/search.tpl.php';
+                break;
+            case 'registration':
+                $template_file = '/templates/template-api/registration.tpl.php';
+                break;
+            case 'login':
+                $template_file = '/templates/template-api/login.tpl.php';
+                break;
+            case 'password-reset':
+                $template_file = '/templates/template-api/password-reset.tpl.php';
+                break;
+            case 'comment':
+                $template_file = '/templates/template-api/comment.tpl.php';
+                break;
+            case 'comment-master':
+                $template_file = '/templates/template-api/comment-master.tpl.php';
+                break;
+            case 'comment-form':
+                $template_file = '/templates/template-api/comment-form.tpl.php';
+                break;
+            case 'main-menu':
+                $template_file = '/templates/template-api/main-menu.tpl.php';
+                break;
+            case 'user-menu':
+                $template_file = '/templates/template-api/user-menu.tpl.php';
+                break;
+            case 'bottom-menu':
+                $template_file = '/templates/template-api/bottom-menu.tpl.php';
+                break;
+            case 'footer':
+                $template_file = '/templates/template-api/footer.tpl.php';
+                break;
+            case 'header':
+                $template_file = '/templates/template-api/header.tpl.php';
+                break;
+            case 'contact':
+                $template_file = '/templates/template-api/contact.tpl.php';
+                break;
+            case 'contact-block':
+                $template_file = '/templates/template-api/contact-block.tpl.php';
+                break;
+            case 'contact-teaser':
+                $template_file = '/templates/template-api/contact-teaser.tpl.php';
+                break;
+            case 'status-message':
+                $template_file = '/templates/template-api/status-message.tpl.php';
+                break;
+            default:
+                $template_file = 'no-template-present';
+        }
+
+        //currently template api is enabled depending if the template is present
+        return (file_exists($path_to_theme . $template_file)) ? TRUE : FALSE;
+
+    } else {
+        return false;
     }
-
-    //currently template api is enabled depending if the template is present
-    return (file_exists($path_to_theme . $template_file) && !path_is_admin(current_path())) ? TRUE : FALSE;
 }
 
 

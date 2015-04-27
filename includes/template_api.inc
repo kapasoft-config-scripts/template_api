@@ -234,6 +234,17 @@ function _page_tapi($vars)
 }
 
 //prepare site related variables for the html.tpl file
+function _html_tapi()
+{
+    $html_tapi = & drupal_static(__FUNCTION__);
+    if (!isset($html_tapi)) {
+        drupal_alter('html_tapi', $html_tapi);
+    }
+    return $html_tapi;
+}
+
+
+//prepare site related variables for the html.tpl file
 function _header_tapi()
 {
     $head_tapi = & drupal_static(__FUNCTION__);
@@ -427,7 +438,19 @@ function _comment_tapi($comment)
     $field_instance = field_get_items('comment', $comment, 'comment_body');
     $field_value = ($field_instance) ? field_view_value('comment', $comment, 'comment_body', $field_instance[0]) : '';
     $comment_tapi['comment']['content'] = render($field_value);
-    $comment_tapi['comment']['date'] = (isset($comment->created)) ? date("F j, Y, g:i a", $comment->created) : 'July 25, 2111';
+    if(isset($comment->created)){
+        $comment_tapi['comment']['date'] = date("F j, Y, g:i a", $comment->created);
+        $comment_tapi['comment']['date_raw'] = array();
+        $comment_tapi['comment']['date_raw']['month'] = date("M", $comment->created);
+        $comment_tapi['comment']['date_raw']['year'] = date("Y", $comment->created);
+        $comment_tapi['comment']['date_raw']['day'] = date("j", $comment->created);
+    }else{
+        $comment_tapi['comment']['date'] = 'Jan 1, 2015';
+        $comment_tapi['comment']['date_raw'] = array();
+        $comment_tapi['comment']['date_raw']['month'] = '';
+        $comment_tapi['comment']['date_raw']['year'] = '';
+        $comment_tapi['comment']['date_raw']['day'] = '';
+    }
 
     //comment links
     if (user_access('administer comments') && user_access('post comments')) {
@@ -466,6 +489,8 @@ function _comment_master_tapi($comment_master_tapi)
     //build tree of comments organized parent-child relationship
     $comment_master_tapi['comments'] = build_comment_tree($all_comments);
 
+    //comment count
+    $comment_master_tapi['comments_count'] = (isset($comment_master_tapi['comments'])) ? count($comment_keys) : 0;
     drupal_alter('comment_master_tapi', $comment_master_tapi);
     return $comment_master_tapi;
 }
