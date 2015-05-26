@@ -291,17 +291,11 @@ function _header_tapi()
 
         /*******conventions******/
         $main_menu_name = 'main-menu';
-//    $main_menu_links = ds_build_menu($main_menu_name);
-//    $head_tapi['main-menu'] = _menu_tapi($main_menu_links, 0, $main_menu_name);
         module_load_include('module', 'designssquare_lib');
-        $head_tapi['main-menu'] = ds_build_menu($main_menu_name);
+        $head_tapi['main-menu'] = is_tapi_enabled('main-menu') ? ds_build_menu($main_menu_name) : '';
 
         $user_menu_name = 'user-menu';
-//    $user_menu_links = ds_build_menu($user_menu_name);
-//    $head_tapi['user-menu'] = _menu_tapi($user_menu_links, 0, $user_menu_name);
-        $head_tapi['user-menu'] = ds_build_menu($user_menu_name);
-
-
+        $head_tapi['user-menu'] = is_tapi_enabled('user-menu') ? ds_build_menu($user_menu_name) : '';
 
         drupal_alter('header_tapi', $head_tapi);
     }

@@ -19,6 +19,8 @@ function designssquare_lib_template_api_preprocess_html(&$vars)
             '#vars_tapi' => $vars,
         );
         $vars['header'] = drupal_render($header);
+    }else{
+        $vars['header'] = '';
     }
 
     /***Footer***/
@@ -30,7 +32,10 @@ function designssquare_lib_template_api_preprocess_html(&$vars)
             'vars_tapi' => $vars,
         ));
         $vars['footer'] = $footer;
+    }else{
+        $vars['footer'] = '';
     }
+
 
 
     //user handling
@@ -906,8 +911,7 @@ function is_tapi_enabled($element)
 {
 
     //disable for admin interface
-    if (!path_is_admin(current_path())) {
-
+    if (!path_is_admin(current_path()) || preg_match('/user\//',current_path())) {
         $path_to_theme = drupal_get_path('theme', variable_get('theme_default'));
 
         switch ($element) {
